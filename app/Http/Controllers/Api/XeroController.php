@@ -21,9 +21,7 @@ class XeroController extends Controller
                  */
                 $xero             = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
                 $organisations = $xero->getOrganisations($xeroCredentials->getTenantId())->getOrganisations();
-                foreach ($organisations as $key => $value) {
-                    echo $value->getName();
-                }
+
                 $organisationName = $organisations[0]->getName();
                 $user             = $xeroCredentials->getUser();
                 $username         = "{$user['given_name']} {$user['family_name']} ({$user['username']})";

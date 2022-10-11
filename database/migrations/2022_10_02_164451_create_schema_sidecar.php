@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateSchemaSidecar extends Migration
 {
@@ -13,117 +14,156 @@ class CreateSchemaSidecar extends Migration
      */
     public function up()
     {
+        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
 
-        Schema::create('companies', function (Blueprint $table) {
-            $table->id('Company_ID');
-            $table->string('Company_Name', 80);
-            $table->string('Company_Fed_ID', 11)->nullable();
-            $table->string('SSN', 11)->nullable();
-            $table->string('Email', 80)->nullable();
-            $table->string('Business_NameW9', 90)->nullable();
-            $table->string('Auth_Code', 8)->nullable();
-            $table->string('Auth_Url', 8)->nullable();
-            $table->tinyInteger('temp_fed_id_flag')->default(0);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `addresses` (
+                `Address_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Database generated unique Address number',
+                `Address1` VARCHAR(45) NULL DEFAULT NULL COMMENT 'Address line 1' COLLATE 'utf8_general_ci',
+                `Address2` VARCHAR(45) NULL DEFAULT NULL COMMENT 'Address line 2' COLLATE 'utf8_general_ci',
+                `City` VARCHAR(45) NULL DEFAULT NULL COMMENT 'City' COLLATE 'utf8_general_ci',
+                `State` VARCHAR(45) NULL DEFAULT NULL COMMENT 'State' COLLATE 'utf8_general_ci',
+                `ZIP` VARCHAR(15) NULL DEFAULT NULL COMMENT 'Postal Code' COLLATE 'utf8_general_ci',
+                `Country` VARCHAR(45) NULL DEFAULT NULL COMMENT 'Country' COLLATE 'utf8_general_ci',
+                `Phone` VARCHAR(30) NULL DEFAULT NULL COMMENT 'Phone' COLLATE 'utf8_general_ci',
+                `Fax` VARCHAR(30) NULL DEFAULT NULL COMMENT 'Fax' COLLATE 'utf8_general_ci',
+                PRIMARY KEY (`Address_ID`) USING BTREE,
+                UNIQUE INDEX `Address_ID_UNIQUE` (`Address_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB;"
+        );
 
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id('Client_ID');
-            $table->integer('Client_Number');
-            $table->integer('Client_Type');
-            $table->tinyInteger('Client_Status')->default(0);
-            $table->integer('Company_ID');
-            $table->decimal('Client_Approval_Amount_1', 8, 2)->nullable();
-            $table->decimal('Client_Approval_Amount_2', 8, 2)->nullable();
-            $table->string('Client_Logo_Name', 32);
-            $table->longText('Client_Logo');
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `clients` (
+                `Client_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Database generated unique Client number',
+                `Client_Number` SMALLINT(6) NOT NULL,
+                `Client_Type` CHAR(1) NOT NULL COMMENT 'Client type' COLLATE 'utf8_general_ci',
+                `Client_Status` TINYINT(1) NOT NULL DEFAULT '0',
+                `Company_ID` INT(11) NOT NULL DEFAULT '0' COMMENT 'Company ID from Companies table',
+                `Client_Approval_Amount_1` DECIMAL(8,2) NULL DEFAULT NULL,
+                `Client_Approval_Amount_2` DECIMAL(8,2) NULL DEFAULT NULL,
+                `Client_Logo_Name` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `Client_Logo` LONGBLOB NULL DEFAULT NULL,
+                PRIMARY KEY (`Client_ID`) USING BTREE,
+                UNIQUE INDEX `Client_ID_UNIQUE` (`Client_ID`) USING BTREE,
+                INDEX `ix_Clients_Client_Number` (`Client_Number`) USING BTREE,
+                INDEX `ix_Clients_Client_Type` (`Client_Type`) USING BTREE,
+                INDEX `fk_Comapny_ID_idx` (`Company_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        // its can be user_details
-        Schema::create('persons', function (Blueprint $table) {
-            $table->id('Person_ID');
-            $table->string('First_Name', 45);
-            $table->string('Last_Name', 45);
-            $table->string('Email', 80);
-            $table->string('Mobile_Phone', 30);
-            $table->string('Direct_Phone', 30);
-            $table->string('Direct_Fax', 30);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `companies` (
+                `Company_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Database generated unique Company number',
+                `Company_Name` VARCHAR(80) NOT NULL COMMENT 'Company name' COLLATE 'utf8_general_ci',
+                `Company_Fed_ID` VARCHAR(11) NOT NULL COLLATE 'utf8_general_ci',
+                `SSN` VARCHAR(11) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `Email` VARCHAR(80) NULL DEFAULT NULL COMMENT 'Default company email address' COLLATE 'utf8_general_ci',
+                `Business_NameW9` VARCHAR(90) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `Auth_Code` VARCHAR(8) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `Auth_Url` VARCHAR(8) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `Temp_Fed_ID_Flag` VARCHAR(1) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                PRIMARY KEY (`Company_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('addresses', function (Blueprint $table) {
-            $table->id('Address_ID');
-            $table->string('Address1', 42);
-            $table->string('Address2', 42);
-            $table->string('City', 42);
-            $table->string('State', 42);
-            $table->string('ZIP', 15);
-            $table->string('Country', 45);
-            $table->string('Phone', 32);
-            $table->string('Fax', 32);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `company_addresses` (
+                `Company_ID` INT(11) NOT NULL COMMENT 'Company ID from Companies table',
+                `Address_ID` INT(11) NOT NULL COMMENT 'Address ID from Addresses table',
+                PRIMARY KEY (`Company_ID`, `Address_ID`) USING BTREE,
+                INDEX `fk_Address_ID_idx` (`Address_ID`) USING BTREE,
+                INDEX `fk_Company_ID_idx` (`Company_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('person_addresses', function (Blueprint $table) {
-            $table->integer('Address_ID');
-            $table->integer('Person_ID');
-            //$table->unique(['Address_ID', 'Person_ID']);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `persons` (
+                `Person_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Database generated unique Person number',
+                `First_Name` VARCHAR(45) NOT NULL COMMENT 'First Name' COLLATE 'utf8_general_ci',
+                `Last_Name` VARCHAR(45) NOT NULL COMMENT 'Last Name' COLLATE 'utf8_general_ci',
+                `Email` VARCHAR(80) NOT NULL COMMENT 'Email address' COLLATE 'utf8_general_ci',
+                `Mobile_Phone` VARCHAR(30) NULL DEFAULT NULL COMMENT 'Person mobile phone' COLLATE 'utf8_general_ci',
+                `Direct_Phone` VARCHAR(30) NULL DEFAULT NULL COMMENT 'Direct line phone' COLLATE 'utf8_general_ci',
+                `Direct_Fax` VARCHAR(30) NULL DEFAULT NULL COMMENT 'Direct line fax' COLLATE 'utf8_general_ci',
+                PRIMARY KEY (`Person_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('company_addresses', function (Blueprint $table) {
-            $table->integer('Address_ID');
-            $table->integer('Company_ID');
-            //$table->unique(['Address_ID', 'Company_ID']);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `person_addresses` (
+                `Person_ID` INT(11) NOT NULL,
+                `Address_ID` INT(11) NOT NULL,
+                PRIMARY KEY (`Person_ID`, `Address_ID`) USING BTREE,
+                INDEX `Address_ID` (`Address_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('users_client_list', function (Blueprint $table) {
-            $table->integer('User_ID');
-            $table->integer('Client_ID');
-            $table->string('User_Type',50);
-            $table->integer('User_Approval_Value')->default(0);
-            $table->unique(['user_id', 'client_id']);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `projects` (
+                `Project_ID` INT(11) NOT NULL AUTO_INCREMENT,
+                `Client_ID` INT(11) NOT NULL,
+                `Project_Name` VARCHAR(25) NOT NULL COLLATE 'utf8_general_ci',
+                `Project_Description` VARCHAR(125) NOT NULL COLLATE 'utf8_general_ci',
+                `Project_Prod_Number` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+                `PO_Starting_Number` INT(11) NOT NULL DEFAULT '1000',
+                `Ck_Req_Starting_Numb` INT(11) NOT NULL DEFAULT '1000',
+                `COA_Manual_Coding` TINYINT(1) NOT NULL DEFAULT '1',
+                `COA_Break_Character` VARCHAR(1) NOT NULL DEFAULT '/' COLLATE 'utf8_general_ci',
+                `COA_Break_Number` TINYINT(4) NOT NULL DEFAULT '0',
+                `PJ_Flag_For_Deletion` TINYINT(1) NULL DEFAULT '0',
+                `Deletion_Date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+                `Deletion_Complete` TINYINT(1) NULL DEFAULT '0',
+                `PJ_Deletion_Requestor` INT(11) NULL DEFAULT '0',
+                `PJ_Deletion_Name` VARCHAR(255) NULL DEFAULT '' COLLATE 'utf8_general_ci',
+                PRIMARY KEY (`Project_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('projects', function (Blueprint $table) {
-            $table->id('Project_ID');
-            $table->integer('Client_ID');
-            $table->string('Project_Name', 25);
-            $table->string('Project_Description', 125);
-            $table->string('Project_Prod_Number',30);
-            $table->integer('PO_Starting_Number')->default(1000);
-            $table->integer('Ck_Req_Starting_Numb')->default(1000);
-            $table->tinyInteger('COA_Manual_Coding')->default(1000);
-            $table->string('COA_Break_Character',1)->default('/');
-            $table->tinyInteger('COA_Break_Number')->default(0);
-            $table->tinyInteger('PJ_Flag_For_Deletion')->default(0);
-            $table->tinyInteger('Deletion_Complete')->default(0);
-            $table->integer('PJ_Deletion_Requestor', 11)->default(0);
-            $table->string('PJ_Deletion_Name', 164);
-            $table->dateTime('Deletion_Date')->nullable();
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `project_api_systems` (
+                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `project_id` INT(11) NOT NULL,
+                `name` VARCHAR(26) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                `description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                `api_key` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                `api_secret` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                `created_at` TIMESTAMP NULL DEFAULT NULL,
+                `updated_at` TIMESTAMP NULL DEFAULT NULL,
+                PRIMARY KEY (`id`) USING BTREE
+            )
+            COLLATE='utf8mb4_unicode_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('users_project_list', function (Blueprint $table) {
-            $table->integer('User_ID');
-            $table->integer('Project_ID');
-            $table->integer('Client_ID');
-            $table->unique(['User_ID', 'Project_ID', 'Client_ID']);
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `users_client_list` (
+                `User_ID` INT(11) NOT NULL,
+                `Client_ID` INT(11) NOT NULL,
+                `User_Type` VARCHAR(50) NOT NULL DEFAULT 'User' COLLATE 'utf8_general_ci',
+                `User_Approval_Value` INT(11) NOT NULL DEFAULT '0',
+                PRIMARY KEY (`User_ID`, `Client_ID`) USING BTREE,
+                INDEX `Client_ID` (`Client_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
 
-        Schema::create('project_api_systems', function (Blueprint $table) {
-            $table->id();
-            $table->integer('Project_ID');
-            $table->string('name', 26);
-            $table->string('description');
-            $table->string('api_key');
-            $table->string('api_secret');
-            $table->timestamps();
-        });
+        DB::statement("CREATE TABLE `users_project_list` (
+                `User_ID` INT(11) NOT NULL,
+                `Project_ID` INT(11) NOT NULL,
+                `Client_ID` INT(11) NOT NULL,
+                PRIMARY KEY (`User_ID`, `Project_ID`) USING BTREE
+            )
+            COLLATE='utf8_general_ci'
+            ENGINE=InnoDB
+        ;");
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 
     }
 
@@ -134,15 +174,16 @@ class CreateSchemaSidecar extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('companies');
-        Schema::dropIfExists('clients');
-        Schema::dropIfExists('persons');
-        Schema::dropIfExists('users_client_list');
+        
         Schema::dropIfExists('addresses');
+        Schema::dropIfExists('clients');
+        Schema::dropIfExists('companies');
         Schema::dropIfExists('company_addresses');
+        Schema::dropIfExists('persons');
         Schema::dropIfExists('person_addresses');
         Schema::dropIfExists('projects');
-        Schema::dropIfExists('users_project_list');
         Schema::dropIfExists('project_api_systems');
+        Schema::dropIfExists('users_client_list');
+        Schema::dropIfExists('users_project_list');
     }
 }
