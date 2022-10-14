@@ -41,4 +41,10 @@ class XeroController extends Controller
         ]);
     }
 
+    // method to handle automatic get the access token
+    // will return access token
+    public function getAccessToken(){
+        return redirect()->route('xero.auth.authorize');
+    }
+
 }
