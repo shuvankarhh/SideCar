@@ -9,11 +9,13 @@ use Webfox\Xero\OauthCredentialManager;
 class XeroController extends Controller
 {
 
+    // call back URL https://sidecar.local/xero/auth/callback
     public function index(Request $request, OauthCredentialManager $xeroCredentials)
     {
         try {
+            
             // Check if we've got any stored credentials
-            if ($xeroCredentials->exists()) {
+            if ($xeroCredentials->exists() && !$xeroCredentials->isExpired()) {
                 /* 
                  * We have stored credentials so we can resolve the AccountingApi, 
                  * If we were sure we already had some stored credentials then we could just resolve this through the controller

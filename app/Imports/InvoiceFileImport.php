@@ -9,11 +9,20 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 // get all the rows
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use App\Models\InvoiceImport;
 
-class InvoiceImport implements ToCollection, WithHeadingRow
+class InvoiceFileImport implements ToCollection, WithHeadingRow
 {
 
     public $data;
+    protected $fileName;
+
+    public function fromFile(string $fileName)
+    {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
     /**
      * @param array $row
      *
@@ -29,8 +38,19 @@ class InvoiceImport implements ToCollection, WithHeadingRow
          */
         foreach ($rows as $row) 
         {
+            InvoiceImport::create([
+                'vendorid'  => $row['vendorid'],
+                'invnum'    => $row['invnum'],
+                'invamt'    => $row['invamt'],
+                'invdate'   => $row['invdate'],
+                'invdue'    => $row['invdue'],
+                'glcode'    => $row['glcode'],
+                'glamt'     => $row['glamt'],
+                'gldesc'    => $row['gldesc'],
+                'filename'  => $this->fileName
+            ]);
+
             if (!empty($row['vendorid'])) {
-            
                 // Vendor detail
                 $this->data[$row['vendorid']]['name'] = $row['vendorid'];
                 // invoice detail
@@ -62,6 +82,7 @@ class InvoiceImport implements ToCollection, WithHeadingRow
         try {
             return \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
         } catch (\ErrorException $e) {
+            echo $value;
             return \Carbon\Carbon::createFromFormat($format, $value);
         }
     }

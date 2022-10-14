@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Upload file to import') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('saveFile') }}">
+                    <form method="POST" action="{{ route('saveFile') }}"  enctype="multipart/form-data">
                         @csrf
 
                         <div class="row mb-3">
@@ -17,7 +17,7 @@
                             <div class="col-md-6">
                                 
                                 <input class="form-control" name="file" type="file" id="formFile" required>
-                                @error('email')
+                                @error('file')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

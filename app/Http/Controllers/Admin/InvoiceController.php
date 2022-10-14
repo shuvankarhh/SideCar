@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Session;
 use Illuminate\Support\Facades\Storage;
-use App\Imports\InvoiceImport;
+use App\Imports\InvoiceFileImport;
 use Excel;
 
 use XeroAPI\XeroPHP\Models\Accounting\Contact;
@@ -18,9 +18,36 @@ use Webfox\Xero\OauthCredentialManager;
 
 class InvoiceController extends Controller
 {
-    public function index(OauthCredentialManager $xeroCredentials)
+    // xlx upload
+    public function index()
     {
-        $invoiceFileImporter = new InvoiceImport();
+        return view('pages.upload');
+    }
+
+    // /fileupload
+    public function saveFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlx,xls,xlsx'
+        ]);
+
+        
+        if($request->file('file'))
+        {
+            $path = $request->file('file')->store('excel-files');
+
+            $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->file->getClientOriginalName());
+            Excel::import($invoiceFileImporter, storage_path('app/' . $path));
+
+            // delete the file after import
+           // unlink(storage_path('app/' . $path));
+        }
+        return back()->with('fileUploaded', 'File Imported Successfully.');
+    }
+
+    public function createInvoice(OauthCredentialManager $xeroCredentials)
+    {
+        $invoiceFileImporter = new InvoiceFileImport();
         Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
 
         $contactname = 'Howard Braunstein Films';
@@ -84,22 +111,9 @@ class InvoiceController extends Controller
         }
     }
 
-    // /fileupload
-    public function saveFile(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlx,xls,xlsx'
-        ]);
+    
 
-        if($request->file())
-        {
-            $path = $request->file('file')->store('excel-files');
-           // $sheets = (new FastExcel)->importSheets(storage_path('app/' . $path));
-            // delete the file after import
-            unlink(storage_path('app/' . $path));
-        }
-        return back()->with('fileUploaded', 'File Imported Successfully.');
-    }
+
 
 
     // /reupload
@@ -108,11 +122,6 @@ class InvoiceController extends Controller
         return redirect("/");
     }
 
-    // api/cleartables
-    public function truncate()
-    {
-        return response()->json(["success" => true], 200);
-    }
 
 
 }

@@ -8,6 +8,7 @@ use Illuminate\Session\Store;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Webfox\Xero\Oauth2Provider;
 use Webfox\Xero\OauthCredentialManager;
+use App\Models\ApiAccessToken;
 
 class UserStorageProvider implements OauthCredentialManager
 {
@@ -38,10 +39,19 @@ class UserStorageProvider implements OauthCredentialManager
         return $this->data('refresh_token');
     }
 
-    public function getTenantId(): string
+    public function getTenantId(int $tenant =0): string
     {
-        return $this->data('tenant_id');
+        if(!isset($this->data('tenants')[$tenant]))
+        {
+            throw new \Exception("No such tenant exists");
+        }
+        return $this->data('tenants')[$tenant]['Id'];
     }
+
+    public function getTenants(): ?array
+    {
+        return $this->data('tenants');
+    } 
 
     public function getExpires(): int
     {
@@ -87,7 +97,7 @@ class UserStorageProvider implements OauthCredentialManager
 
     public function store(AccessTokenInterface $token, string $tenantId = null): void
     {
-        $this->user->xero_oauth = [
+        $this->user->xero_oauth = [ 
             'token'         => $token->getToken(),
             'refresh_token' => $token->getRefreshToken(),
             'id_token'      => $token->getValues()['id_token'],

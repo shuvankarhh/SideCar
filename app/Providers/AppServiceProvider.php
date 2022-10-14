@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Xero\UserStorageProvider;
+use App\Models\ProjectApiSystem;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(OauthCredentialManager::class, function(Application $app) {
+            // $app->make(config('xero.credential_store'))
             return new UserStorageProvider(
                 \Auth::user(), // Storage Mechanism 
                 $app->make('session.store'), // Used for storing/retrieving oauth 2 "state" for redirects

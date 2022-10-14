@@ -98,17 +98,7 @@ class SetupController extends Controller
         }
   
         // goes to file upload
-        return redirect()->route('Setup');
-    }
-
-    /**
-     * Show the step One Form for creating a new product.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function finish(Request $request)
-    {
-        return view('setup.finish');
+        return redirect()->route('upload');
     }
 
 

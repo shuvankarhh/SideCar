@@ -141,6 +141,20 @@ class CreateSchemaSidecar extends Migration
             ENGINE=InnoDB
         ;");
 
+        DB::statement("CREATE TABLE `api_access_tokens` (
+            `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `project_api_system_id` INT(11) NOT NULL,
+            `token` TEXT NULL DEFAULT NULL,
+            `expires` TIMESTAMP NULL DEFAULT NULL,
+            `details` LONGTEXT NULL DEFAULT NULL,
+            `created_at` TIMESTAMP NULL DEFAULT NULL,
+            `updated_at` TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        )
+        COLLATE='utf8mb4_unicode_ci'
+        ENGINE=InnoDB
+        ;");
+
         DB::statement("CREATE TABLE `users_client_list` (
                 `User_ID` INT(11) NOT NULL,
                 `Client_ID` INT(11) NOT NULL,
@@ -182,8 +196,9 @@ class CreateSchemaSidecar extends Migration
         Schema::dropIfExists('persons');
         Schema::dropIfExists('person_addresses');
         Schema::dropIfExists('projects');
-        Schema::dropIfExists('project_api_systems');
         Schema::dropIfExists('users_client_list');
         Schema::dropIfExists('users_project_list');
+        Schema::dropIfExists('project_api_systems');
+        Schema::dropIfExists('api_access_tokens');
     }
 }
