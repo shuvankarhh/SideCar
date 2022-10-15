@@ -36,9 +36,9 @@ Route::post('/step_one', [SetupController::class, 'postCreateStepOne'])->name('P
 Route::get('/step_two', [SetupController::class, 'createStepTwo'])->name('StepTwo');
 Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('PostStepTwo');
 
-Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload");
-Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile");
-Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice");
+Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload")->middleware('RestrictedUrl');
+Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile")->middleware('RestrictedUrl');
+Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice")->middleware('RestrictedUrl');
 
 Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
 
