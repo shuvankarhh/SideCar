@@ -7,7 +7,7 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Webfox\Xero\Events\XeroAuthorized;
-use App\Events\XeroEvent;
+use App\Listeners\XeroEvent;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        XeroAuthorized::class => [
+            XeroEvent::class
+        ]
     ];
 
     /**
