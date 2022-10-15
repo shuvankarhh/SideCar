@@ -13,6 +13,7 @@ use XeroAPI\XeroPHP\Models\Accounting\Contact;
 use XeroAPI\XeroPHP\Models\Accounting\LineItem;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 use XeroAPI\XeroPHP\Models\Accounting\Invoices;
+use App\Services\FormatInvoiceData;
 
 use Webfox\Xero\OauthCredentialManager;
 
@@ -45,56 +46,53 @@ class InvoiceController extends Controller
         return back()->with('fileUploaded', 'File Imported Successfully.');
     }
 
-    public function createInvoice(OauthCredentialManager $xeroCredentials)
+    public function testMethod()
     {
         $invoiceFileImporter = new InvoiceFileImport();
         Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
-
-        $contactname = 'Howard Braunstein Films';
-       // $contactname = 'Writers Guild Industry Health Fund';
-
-        //create contact
-        $xcontact = new Contact();
-        $xcontact->setName($contactname);
-        //$xcontact->setContactId($contactname);
         
+    }
 
-        foreach ($invoiceFileImporter->data as $key => $data) {
+    // each project have differen Xero instance and redirect URL need to include project ID so we can store the access token base on project
+    public function createInvoice(OauthCredentialManager $xeroCredentials)
+    {
+        $formatInvoicedata = new FormatInvoiceData(Session::get('project_id'));
 
-            if($data['name'] == $contactname)
-            {
-                foreach ($data['invoices'] as $key => $invoice) {
-                    $xinvoice = new Invoice();
-                    $xinvoice->setType("ACCREC");
-                    $xinvoice->setStatus("DRAFT");     
-                    $xinvoice->setDate($invoice['invdate']);
-                    $xinvoice->setDueDate($invoice['invdate']);
-                    $xinvoice->setLineAmountTypes("NoTax"); 
-                    $xinvoice->setContact($xcontact);
-                    
-                    foreach($invoice['glcode'] as $glcode ){
-                        $newLine = new LineItem();
-                        $newLine->setDescription($glcode['glcode'] ." - ".$glcode['gldesc']);
-                        $newLine->setQuantity("1.0000");
-                        $newLine->setUnitAmount($glcode['glamt']);
-                        //$newLine->setAccountCode();
-                        $lineItems[] = $newLine;
-                    }
+        foreach ($formatInvoicedata->data as $key => $data) {
 
-                    $xinvoice->setLineItems($lineItems);
-                    $xinvoice->setInvoiceNumber($invoice['invnum']);
-                    $xinvoices[] = $xinvoice;
+            //create contact
+            $xcontact = new Contact();
+            $xcontact->setName($data['name']);
+            //$xcontact->setContactId($data['name']);
+
+            foreach ($data['invoices'] as $key => $invoice) {
+                $xinvoice = new Invoice();
+                $xinvoice->setType("ACCPAY");
+                $xinvoice->setStatus("DRAFT");     
+                $xinvoice->setDate($invoice['invdate']);
+                $xinvoice->setDueDate($invoice['invdate']);
+                $xinvoice->setLineAmountTypes("NoTax"); 
+                $xinvoice->setContact($xcontact);
+                
+                $lineItems=[];
+                foreach($invoice['glcodes'] as $glcode ){
+                    $newLine = new LineItem();
+                    $newLine->setDescription($glcode['gldesc']);
+                    $newLine->setQuantity("1.0000");
+                    $newLine->setUnitAmount($glcode['glamt']);
+                    $newLine->setAccountCode($glcode['glcode']);
+                    $lineItems[] = $newLine;
                 }
 
+                $xinvoice->setLineItems($lineItems);
+                $xinvoice->setInvoiceNumber($invoice['invnum']);
+                $xinvoices[] = $xinvoice;
             }
             
         }
 
-        // Check if we've got any stored credentials
-        //var_dump(json_encode(new Invoices(['invoices'=> $xinvoices])));
         $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-
-
+        $formatInvoicedata->updateDBRecords();
         return view('pages.home', [
             'homepage_link' => config('common.homepage_link')
         ]);
@@ -110,18 +108,6 @@ class InvoiceController extends Controller
             $xero->updateOrCreateInvoices($tenantID, new Invoices($inovices));
         }
     }
-
-    
-
-
-
-
-    // /reupload
-    public function reset()
-    {
-        return redirect("/");
-    }
-
 
 
 }

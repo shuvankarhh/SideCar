@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\HomeController;
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -38,6 +38,17 @@ Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('P
 
 Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload");
 Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile");
+Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice");
 
+Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
+
+
+
+
+Route::get('/reset', function(Request $request) {
+    $request->session()->forget('client_id');
+    $request->session()->forget('project_id');
+    return redirect()->route('StepOne');
+})->name('reset');
 
 Auth::routes();

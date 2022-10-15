@@ -25,6 +25,8 @@ class CreateTableToStoreInvoiceImport extends Migration
             $table->string('glamt')->nullable();
             $table->string('gldesc')->nullable();
             $table->string('filename');
+            $table->tinyInteger('imported')->default(0);
+            $table->integer('project_id');
             $table->timestamps();
         });
     }

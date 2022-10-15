@@ -10,4 +10,15 @@ class InvoiceImport extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+
+    public function invoices()
+    {
+        return $this->hasMany(InvoiceImport::class, 'invnum','invnum');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Campaign::class, 'vendorid');
+    }
 }

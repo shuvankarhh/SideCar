@@ -22,9 +22,13 @@ class UserStorageProvider implements OauthCredentialManager
    /** @var User */
     protected $user;
 
+    /** @var User */
+    protected $accessTokenTable;
+
     public function __construct(User $user, Store $session, Oauth2Provider $oauthProvider)
     {
         $this->use           = $user;
+        //$this->accessTokenTable = 
         $this->oauthProvider = $oauthProvider;
         $this->session       = $session;
     }

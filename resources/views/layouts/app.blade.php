@@ -35,7 +35,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link">Create</a>
+                            <a class="nav-link" href="{{ route('reset') }}">Reset |</a>
                         </li>
                     </ul>
 
@@ -43,14 +43,7 @@
                     <ul class="navbar-nav ms-auto text-white">
 
                         @if(Session::has('client_id'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">{{ Session::get('client_id')}} |</a>
-                                </li>
-                        @endif
-                        @if(Session::has('project_id'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">{{ Session::get('project_id')}} |</a>
-                                </li>
+                            <x-setupDetails></x-setupDetails>
                         @endif
                         <!-- Authentication Links -->
                         @guest
