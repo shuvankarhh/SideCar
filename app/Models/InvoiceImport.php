@@ -11,7 +11,6 @@ class InvoiceImport extends Model
 
     protected $guarded = [];
 
-
     public function invoices()
     {
         return $this->hasMany(InvoiceImport::class, 'invnum','invnum');

@@ -17,7 +17,7 @@ class Company extends Model
         return $this->belongsToMany('App\Models\Address','company_addresses', 'Company_ID', 'Address_ID');
     }
 
-    public function course()
+    public function client()
     {
         return $this->belongsTO('App\Models\Client', 'Company_ID', 'Company_ID');
     }

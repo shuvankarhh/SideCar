@@ -1,6 +1,7 @@
 <?php
 
 use Webfox\Xero\Oauth2CredentialManagers\FileStore;
+use App\Xero\ProjectStorageProvider;
 
 return [
 
@@ -10,7 +11,9 @@ return [
      * Class used to store credentials.
      * Must implement OauthCredentialManager Interface
      ************************************************************************/
-    'credential_store' => FileStore::class,
+//    'credential_store' => FileStore::class,
+
+    'credential_store' => ProjectStorageProvider::class,
 
     /************************************************************************
      * Disk used to store credentials.
@@ -49,14 +52,16 @@ return [
         /************************************************************************
          * Url to redirect to upon success
          ************************************************************************/
-        'redirect_on_success'        => 'xero.auth.success',
+        //'redirect_on_success'        => 'xero.auth.success',
+        'redirect_on_success'               =>'callBackRedirecttest',
 
         /************************************************************************
          * Url for Xero to redirect to upon granting access
          * Unless you wish to change the default behaviour you should not need to
          * change this
          ************************************************************************/
-        'redirect_uri'               => 'xero.auth.callback',
+        //'redirect_uri'               => 'xero.auth.callback',
+        'redirect_uri'               =>'callBackRedirect',
 
         /************************************************************************
          * If the 'redirect_uri' is not a route name, but rather a full url set

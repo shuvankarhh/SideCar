@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\ApiAccessController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +20,9 @@ use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('RestrictedUrl');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('RestrictedUrl');
 
 /* 
  * We name this route xero.auth.success as by default the config looks for a route with this name to redirect back to
@@ -43,6 +44,27 @@ Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name(
 Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
 
 
+Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
+Route::get('/call/test/{id?}', [ApiAccessController::class, 'callBackRedirect'])->name("callBackRedirecttest");
+
+
+
+Route::get('clear_cache', function () {
+    \Artisan::call('optimize:clear');
+    dd("clear cache");
+});
+
+Route::get('migrate', function () {
+    \Artisan::call('migrate');
+    dd("run migrations");
+});
+
+Route::get('db_wipe', function () {
+    \Artisan::call('db:wipe');
+    \Artisan::call('migrate');
+    dd("run migrations");
+
+});
 
 
 Route::get('/reset', function(Request $request) {

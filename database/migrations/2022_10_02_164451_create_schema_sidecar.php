@@ -144,8 +144,6 @@ class CreateSchemaSidecar extends Migration
         DB::statement("CREATE TABLE `api_access_tokens` (
             `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             `project_api_system_id` INT(11) NOT NULL,
-            `token` TEXT NULL DEFAULT NULL,
-            `expires` TIMESTAMP NULL DEFAULT NULL,
             `details` LONGTEXT NULL DEFAULT NULL,
             `created_at` TIMESTAMP NULL DEFAULT NULL,
             `updated_at` TIMESTAMP NULL DEFAULT NULL,

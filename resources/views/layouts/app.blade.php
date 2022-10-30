@@ -26,7 +26,7 @@
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3 navbar-light text-white bg-dark shadow-sm" id="mainNav">
             <div class="container-fluid px-4 px-lg-5">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="{{ asset('images/Sidecar-logo.png')}}" alt="{{ config('app.name', 'Laravel') }}" />
+                    <img src="{{ asset('images/sidecar_logo.png')}}" alt="{{ config('app.name', 'Laravel') }}" />
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>

@@ -22,6 +22,8 @@ class InvoiceController extends Controller
     // xlx upload
     public function index()
     {
+        $p = \App\Models\Project::where('Project_ID', 1)->first();
+        dd($p->projectApiSystem->apiAccessToken()->exists());
         return view('pages.upload');
     }
 
@@ -29,10 +31,10 @@ class InvoiceController extends Controller
     public function saveFile(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlx,xls,xlsx'
+            'file' => 'required|mimes:xlx,xls,xlsx|exists:invoice_imports,filename'
         ]);
 
-        
+        // same file name should give error
         if($request->file('file'))
         {
             $path = $request->file('file')->store('excel-files');
@@ -81,6 +83,13 @@ class InvoiceController extends Controller
                     $newLine->setQuantity("1.0000");
                     $newLine->setUnitAmount($glcode['glamt']);
                     $newLine->setAccountCode($glcode['glcode']);
+                        //$newLine->setTracking($glcode['glcode']); Signs of Xmas from '150/Signs of Xmas'
+                        // "Tracking": [
+                        //     {
+                        //       "TrackingCategoryID": "e2f2f732-e92a-4f3a9c4d-ee4da0182a13",
+                        //       "Name": "Activity/Workstream",
+                        //       "Option": "Onsite consultancy"
+                        //     }
                     $lineItems[] = $newLine;
                 }
 
