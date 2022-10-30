@@ -46,7 +46,6 @@ class SetupController extends Controller
      */
     public function postCreateStepOne(Request $request)
     {
-    
         $validatedData = $request->validate([
             'client_id' => 'required',
         ]);
@@ -101,6 +100,5 @@ class SetupController extends Controller
         // goes to file upload
         return redirect()->route('upload');
     }
-
 
 }

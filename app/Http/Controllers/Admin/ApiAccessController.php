@@ -19,7 +19,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 class ApiAccessController extends Controller
 {
 
-    public function index( Request $request, OauthCredentialManager $oauth, IdentityApi $identity, OauthTwoProvider $provider)
+    public function index(Request $request, OauthCredentialManager $oauth, IdentityApi $identity, OauthTwoProvider $provider)
     {
         try {
             $this->validate($request, [

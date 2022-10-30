@@ -2,7 +2,6 @@
 
 namespace App\Xero;
 
-use App\Models\User;
 use Illuminate\Session\Store;
 use Webfox\Xero\Oauth2Provider;
 use Webfox\Xero\OauthCredentialManager;
@@ -24,19 +23,17 @@ class ProjectStorageProvider implements OauthCredentialManager
     /** @var Store */
     protected $session;
 
-   /** @var User */
-    protected $user;
-
-    /** @var User */
+    /** @var project */
     protected $project;
 
-    /** @var User */
-    protected $accessTokenTable;
 
     public function __construct(Project $project, Store $session, OauthTwoProvider $oauthProvider)
     {
         $this->project          =  $project->where('Project_ID', \Session::get('project_id'))->first();
-        $this->accessTokenTable =  $this->project->projectApiSystem->apiAccessToken;
+        if(empty($this->project->projectApiSystem))
+        {
+            throw new \Exception("Please provide API access keys!");
+        }
         $this->oauthProvider    =  $oauthProvider;
         $this->session          =  $session;
 

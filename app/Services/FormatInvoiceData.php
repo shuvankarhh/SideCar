@@ -13,12 +13,16 @@ class FormatInvoiceData
     public function __construct($project_id)
     {
         $this->project_id = $project_id;
-        $this->formatApiData($project_id);
     }
 
-    public function formatApiData($project_id)
+    public function rawData()
     {
-        $dataToBeImported = InvoiceImport::where(['project_id' => $this->project_id, 'imported' => 0])->get();
+        return InvoiceImport::where(['project_id' => $this->project_id, 'imported' => 0])->get();
+    }
+
+    public function formatApiData()
+    {
+        $dataToBeImported = $this->rawData();
 
         foreach ($dataToBeImported as $key => $row) {
             $this->idsToUpdate[$row->id] = $row->id;

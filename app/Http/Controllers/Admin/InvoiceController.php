@@ -14,7 +14,7 @@ use XeroAPI\XeroPHP\Models\Accounting\LineItem;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 use XeroAPI\XeroPHP\Models\Accounting\Invoices;
 use App\Services\FormatInvoiceData;
-
+use PhpParser\Node\Expr\FuncCall;
 use Webfox\Xero\OauthCredentialManager;
 
 class InvoiceController extends Controller
@@ -23,15 +23,16 @@ class InvoiceController extends Controller
     public function index()
     {
         $p = \App\Models\Project::where('Project_ID', 1)->first();
-        dd($p->projectApiSystem->apiAccessToken()->exists());
+        //dd($p->projectApiSystem->apiAccessToken()->exists());
         return view('pages.upload');
     }
 
     // /fileupload
     public function saveFile(Request $request)
     {
+        // unique file validation needed
         $request->validate([
-            'file' => 'required|mimes:xlx,xls,xlsx|exists:invoice_imports,filename'
+            'file' => ['required', 'mimes:xlx,xls,xlsx']
         ]);
 
         // same file name should give error
@@ -46,7 +47,16 @@ class InvoiceController extends Controller
             unlink(storage_path('app/' . $path));
         }
         // need to redirect to create invoices view
-        return back()->with('fileUploaded', 'File Imported Successfully.');
+        return redirect()->route('importView');
+        //return back()->with('fileUploaded', 'File Imported Successfully.');
+    }
+
+    public function importView()
+    {
+        $formatInvoicedata = new FormatInvoiceData($this->getProject()->Project_ID);
+        return view('pages.invoiceView',[
+            'data' => $formatInvoicedata->rawData()
+        ]);
     }
 
     public function testMethod()
@@ -59,7 +69,8 @@ class InvoiceController extends Controller
     // each project have differen Xero instance and redirect URL need to include project ID so we can store the access token base on project
     public function createInvoice(OauthCredentialManager $xeroCredentials)
     {
-        $formatInvoicedata = new FormatInvoiceData(Session::get('project_id'));
+        $formatInvoicedata = new FormatInvoiceData($this->getProject()->Project_ID);
+        $formatInvoicedata->formatApiData();
 
         foreach ($formatInvoicedata->data as $key => $data) {
             //create contact
@@ -82,6 +93,7 @@ class InvoiceController extends Controller
                     $newLine->setDescription($glcode['gldesc']);
                     $newLine->setQuantity("1.0000");
                     $newLine->setUnitAmount($glcode['glamt']);
+                    // $this->project->COA_Break_Character
                     $newLine->setAccountCode($glcode['glcode']);
                         //$newLine->setTracking($glcode['glcode']); Signs of Xmas from '150/Signs of Xmas'
                         // "Tracking": [
@@ -116,6 +128,11 @@ class InvoiceController extends Controller
             // line 58337 and 58101
             $xero->updateOrCreateInvoices($tenantID, new Invoices($inovices));
         }
+    }
+
+    protected function breakGLCode($code, $char)
+    {
+        return implode($char, $code);
     }
 
 

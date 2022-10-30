@@ -8,6 +8,15 @@
                 <div class="card-header">{{ __('Upload file to import') }}</div>
 
                 <div class="card-body">
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form method="POST" action="{{ route('saveFile') }}"  enctype="multipart/form-data">
                         @csrf
 
@@ -15,13 +24,7 @@
                             <label for="file" class="col-md-4 col-form-label text-md-end">{{ __('File') }}</label>
 
                             <div class="col-md-6">
-                                
                                 <input class="form-control" name="file" type="file" id="formFile" required>
-                                @error('file')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
                             </div>
                         </div>
 
@@ -33,6 +36,7 @@
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
