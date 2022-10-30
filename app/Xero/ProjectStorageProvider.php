@@ -10,9 +10,10 @@ use App\Models\ApiAccessToken;
 use App\Models\Project;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use App\Xero\OauthTwoProvider;
-/*
-* Check FileStore.php file from reference
-*/
+/**
+ * Check FileStore.php file from reference
+ * XeroServiceProvider.php for more detail and Xero.php (config file)
+ */
 
 class ProjectStorageProvider implements OauthCredentialManager
 {

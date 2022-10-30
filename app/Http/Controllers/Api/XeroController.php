@@ -27,7 +27,13 @@ class XeroController extends Controller
                 $organisationName = $organisations[0]->getName();
                 $user             = $xeroCredentials->getUser();
                 $username         = "{$user['given_name']} {$user['family_name']} ({$user['username']})";
+
+                // if I am connected to XERO redirect to the file import process
+                if($xeroCredentials->exists()){
+                    //return redirect()->route('upload');
+                }
             }
+
         } catch (\throwable $e) {
             // This can happen if the credentials have been revoked or there is an error with the organisation (e.g. it's expired)
             $error = $e->getMessage();

@@ -43,8 +43,9 @@ class InvoiceController extends Controller
             Excel::import($invoiceFileImporter, storage_path('app/' . $path));
 
             // delete the file after import
-           // unlink(storage_path('app/' . $path));
+            unlink(storage_path('app/' . $path));
         }
+        // need to redirect to create invoices view
         return back()->with('fileUploaded', 'File Imported Successfully.');
     }
 
@@ -61,7 +62,6 @@ class InvoiceController extends Controller
         $formatInvoicedata = new FormatInvoiceData(Session::get('project_id'));
 
         foreach ($formatInvoicedata->data as $key => $data) {
-
             //create contact
             $xcontact = new Contact();
             $xcontact->setName($data['name']);
