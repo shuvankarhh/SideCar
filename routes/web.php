@@ -36,7 +36,7 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile");
     Route::get('/importView', [InvoiceController::class, 'importView'])->name("importView");
     Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice");
-
+    Route::get('/reupload', [InvoiceController::class, 'reupload'])->name("reupload");
 });
 
 Route::get('/setup', [SetupController::class, 'index'])->name('Setup');

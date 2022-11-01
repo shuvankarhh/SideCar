@@ -8,12 +8,15 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use App\Models\Project;
 use App\Models\Client;
+use Session;
+use Illuminate\Http\Request;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     const PAGINATION_NUM_OF_ITEM = 5;
 
+    public $request;
     
     public function getProject()
     {

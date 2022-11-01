@@ -14,14 +14,22 @@ use XeroAPI\XeroPHP\Models\Accounting\LineItem;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 use XeroAPI\XeroPHP\Models\Accounting\Invoices;
 use App\Services\FormatInvoiceData;
-use PhpParser\Node\Expr\FuncCall;
 use Webfox\Xero\OauthCredentialManager;
 
 class InvoiceController extends Controller
 {
-    // xlx upload
-    public function index()
+
+    public $formatInvoice;
+
+    public function __construct(FormatInvoiceData $formatInvoice)
     {
+        $this->formatInvoice = $formatInvoice;
+    } 
+
+    // xlx upload
+    public function index(Request $request)
+    {
+
         $p = \App\Models\Project::where('Project_ID', 1)->first();
         //dd($p->projectApiSystem->apiAccessToken()->exists());
         return view('pages.upload');
@@ -42,7 +50,6 @@ class InvoiceController extends Controller
 
             $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->file->getClientOriginalName());
             Excel::import($invoiceFileImporter, storage_path('app/' . $path));
-
             // delete the file after import
             unlink(storage_path('app/' . $path));
         }
@@ -53,9 +60,9 @@ class InvoiceController extends Controller
 
     public function importView()
     {
-        $formatInvoicedata = new FormatInvoiceData($this->getProject()->Project_ID);
+        $this->formatInvoice->setProject($this->getProject());
         return view('pages.invoiceView',[
-            'data' => $formatInvoicedata->rawData()
+            'data' => $this->formatInvoice->rawData()
         ]);
     }
 
@@ -69,10 +76,10 @@ class InvoiceController extends Controller
     // each project have differen Xero instance and redirect URL need to include project ID so we can store the access token base on project
     public function createInvoice(OauthCredentialManager $xeroCredentials)
     {
-        $formatInvoicedata = new FormatInvoiceData($this->getProject()->Project_ID);
-        $formatInvoicedata->formatApiData();
+        $this->formatInvoice->setProject($this->getProject());
+        $formatInvoicedata = $this->formatInvoice->formatApiData();
 
-        foreach ($formatInvoicedata->data as $key => $data) {
+        foreach ($formatInvoicedata as $key => $data) {
             //create contact
             $xcontact = new Contact();
             $xcontact->setName($data['name']);
@@ -113,10 +120,17 @@ class InvoiceController extends Controller
         }
 
         $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-        $formatInvoicedata->updateDBRecords();
+        $this->formatInvoice->updateDBRecords();
         return view('pages.home', [
             'homepage_link' => config('common.homepage_link')
         ]);
+    }
+
+    public function reupload()
+    {
+        $this->formatInvoice->setProject($this->getProject());
+        $this->formatInvoice->removeRecords();
+        return redirect()->route('upload');
     }
 
     private function makeRequest($xeroCredentials, $inovices)
