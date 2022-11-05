@@ -49,14 +49,10 @@ class SetupController extends Controller
         $validatedData = $request->validate([
             'client_id' => 'required',
         ]);
-  
-        if(empty($request->session()->get('client_id'))){
-            $request->session()->put('client_id', $request->get('client_id'));
-        }else{
-            $client_id = $request->session()->get('client_id');
-            $request->session()->put('client_id',  $client_id);
-        }
-  
+
+        // $request->session()->get('client_id');
+        $request->session()->put('client_id', $request->get('client_id'));
+
         return redirect()->route('StepTwo');
     }
 
@@ -90,13 +86,8 @@ class SetupController extends Controller
             'project_id' => 'required'
         ]);
 
-        if(empty($request->session()->get('project_id'))){
-            $request->session()->put('project_id', $request->get('project_id'));
-        }else{
-            $project_id = $request->session()->get('project_id');
-            $request->session()->put('project_id',  $project_id);
-        }
-  
+        $request->session()->put('project_id', $request->get('project_id'));
+        
         // goes to file upload
         return redirect()->route('upload');
     }

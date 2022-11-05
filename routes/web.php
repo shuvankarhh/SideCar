@@ -21,10 +21,7 @@ use Illuminate\Http\Request;
 
 Route::middleware(['RestrictedUrl'])->group(function(){
 
-    Route::get('/', function () {
-        return view('welcome');
-    });
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    //Route::get('/{home?}', [HomeController::class, 'index'])->name('home');
 
     /* 
     * We name this route xero.auth.success as by default the config looks for a route with this name to redirect back to
@@ -47,10 +44,9 @@ Route::post('/step_one', [SetupController::class, 'postCreateStepOne'])->name('P
 Route::get('/step_two', [SetupController::class, 'createStepTwo'])->name('StepTwo');
 Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('PostStepTwo');
 
-Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
-
 Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
-Route::get('/call/test/{id?}', [ApiAccessController::class, 'callBackRedirect'])->name("callBackRedirecttest");
+
+Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
 
 
 Route::get('clear_cache', function () {

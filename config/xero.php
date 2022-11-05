@@ -53,7 +53,7 @@ return [
          * Url to redirect to upon success
          ************************************************************************/
         //'redirect_on_success'        => 'xero.auth.success',
-        'redirect_on_success'               =>'callBackRedirecttest',
+        'redirect_on_success'               =>'upload',
 
         /************************************************************************
          * Url for Xero to redirect to upon granting access

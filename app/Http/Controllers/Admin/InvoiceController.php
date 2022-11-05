@@ -15,6 +15,7 @@ use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 use XeroAPI\XeroPHP\Models\Accounting\Invoices;
 use App\Services\FormatInvoiceData;
 use Webfox\Xero\OauthCredentialManager;
+use XeroAPI\XeroPHP\Api\IdentityApi;
 
 class InvoiceController extends Controller
 {
@@ -26,16 +27,34 @@ class InvoiceController extends Controller
         $this->formatInvoice = $formatInvoice;
     } 
 
-    // xlx upload
-    public function index(Request $request)
+    // Check if access key exists for the project and tenant
+    // if not redirect to manage api access page
+    // Also need to check if we have access to tenant
+    public function index(Request $request, OauthCredentialManager $xeroCredentials, IdentityApi $identity)
     {
+        $p = \App\Models\Project::where('Project_ID', \Session::get('project_id'))->first();
+        if($p->projectApiSystem()->exists() == false)
+        {   
+            return abort(403, 'Please provide API keys for this project');
+        }
+        if($p->projectApiSystem->apiAccessToken()->exists() == false)
+        {   
+            return redirect()->route('xero.auth.success');
+        }else{
 
-        $p = \App\Models\Project::where('Project_ID', 1)->first();
-        //dd($p->projectApiSystem->apiAccessToken()->exists());
+            // check if we have access token have access to tenant
+            // if not we need to get update access token with new tenant ID
+            if ($xeroCredentials->exists()) {
+                //$identity->getConfig()->setAccessToken((string)$xeroCredentials->getAccessToken());
+                $tenants = $xeroCredentials->getTenants();
+               // dd($identity->getConnections(), $tenants); // f0edac46-76ca-48ce-b479-442cff00012f
+            }
+
+        }
         return view('pages.upload');
     }
 
-    // /fileupload
+    // fileupload
     public function saveFile(Request $request)
     {
         // unique file validation needed
@@ -64,13 +83,6 @@ class InvoiceController extends Controller
         return view('pages.invoiceView',[
             'data' => $this->formatInvoice->rawData()
         ]);
-    }
-
-    public function testMethod()
-    {
-        $invoiceFileImporter = new InvoiceFileImport();
-        Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
-        
     }
 
     // each project have differen Xero instance and redirect URL need to include project ID so we can store the access token base on project
@@ -136,6 +148,7 @@ class InvoiceController extends Controller
     private function makeRequest($xeroCredentials, $inovices)
     {
         if ($xeroCredentials->exists()) {
+            // Tenant ID is based on Project
             $tenantID = $xeroCredentials->getTenantId();
             var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
             $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);

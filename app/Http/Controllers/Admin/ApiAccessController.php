@@ -27,6 +27,8 @@ class ApiAccessController extends Controller
                 'state' => ['required', 'string', "in:{$oauth->getState()}"]
             ]);
 
+            Log::info(json_encode($request));
+
             $provider->setClientID($this->getProject()->projectApiSystem->api_key);
             $provider->setClientSecret($this->getProject()->projectApiSystem->api_secret);
             
@@ -64,17 +66,20 @@ class ApiAccessController extends Controller
         throw $e;
     }
 
-    // https://sidecar.local/call/1/back
-    // https://sidecar.local/xero/auth/callback
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function callBackRedirect($id = false, Request $request)
+    // project is tenants one Xero
+    // Multi projects can have one APi key access
+    // client and project id in api to and client_id
+    public function testMethod(OauthCredentialManager $xeroCredentials)
     {
-        Log::info(json_encode($id));
-        Log::info(json_encode($request));
+        //$invoiceFileImporter = new InvoiceFileImport();
+        //Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
+        if ($xeroCredentials->exists()) {
+            $tenantID = $xeroCredentials->getTenants();
+            var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
+            //$xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
+            // line 58337 and 58101
+           // $xero->updateOrCreateInvoices($tenantID, new Invoices($inovices));
+        }
     }
 
 }

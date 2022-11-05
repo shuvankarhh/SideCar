@@ -4,6 +4,9 @@
 <div class="container d-flex min-vh-100">
     <div class="row h-100 w-100 justify-content-center align-items-center align-content-center flex-column m-auto">
         <div class="col-md-8 bg-white">
+            <a class="btn btn-primary" href="{{ route('createInvoice') }}">Import</a> 
+            <a class="btn btn-primary" href="{{ route('reupload') }}">Reupload</a>
+    
             <table class="table">
                 <thead>
                     <tr>
@@ -38,8 +41,6 @@
                 </tbody>
             </table>
 
-            <a class="btn btn-primary" href="{{ route('createInvoice') }}">Import</a> 
-            <a class="btn btn-primary" href="{{ route('reupload') }}">Reupload</a>
         </div>
     </div>
 </div>

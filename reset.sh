@@ -2,7 +2,7 @@
 
 php artisan optimize:clear
 
-#php artisan migrate:refresh
+php artisan migrate:refresh
 
 #php artisan db:seed --class=PermissionTableSeeder
 

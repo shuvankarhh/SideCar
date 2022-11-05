@@ -19,7 +19,7 @@ class RestrictedUrl
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($this->isAllowed()) {
+        if (!$this->isAllowed()) {
             //return abort(403, 'You are not authorized to access this. Please set client and project first');
             return redirect()->route('StepOne');
         }
@@ -28,7 +28,7 @@ class RestrictedUrl
     }
 
     protected function isAllowed(){
-        return (!Session::has('client_id') && !Session::has('project_id'));
+        return (Session::has('client_id') && Session::has('project_id'));
     }
 
 }

@@ -129,6 +129,8 @@ class CreateSchemaSidecar extends Migration
         DB::statement("CREATE TABLE `project_api_systems` (
                 `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `project_id` INT(11) NOT NULL,
+                `client_id` INT(11) NULL DEFAULT NULL,
+                `tanent_name` VARCHAR(64) NULL DEFAULT NULL,
                 `name` VARCHAR(26) NOT NULL COLLATE 'utf8mb4_unicode_ci',
                 `description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
                 `api_key` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
