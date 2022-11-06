@@ -69,11 +69,15 @@ class ApiAccessController extends Controller
     // project is tenants one Xero
     // Multi projects can have one APi key access
     // client and project id in api to and client_id
-    public function testMethod(OauthCredentialManager $xeroCredentials)
+    public function testMethod(OauthCredentialManager $xeroCredentials, IdentityApi $identity)
     {
         //$invoiceFileImporter = new InvoiceFileImport();
         //Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
         if ($xeroCredentials->exists()) {
+            
+            $identity->getConfig()->setAccessToken((string)$xeroCredentials->getAccessToken());
+            dd($identity->getConnections());
+
             $tenantID = $xeroCredentials->getTenants();
             var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
             //$xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);

@@ -22,7 +22,11 @@
                                 </a>
                             @elseif($connected)
                                 <h1>You are connected to Xero</h1>
-                                <p>{{ $organisationName }} via {{ $username }}</p>
+                                @foreach ($organisations as $organisation )
+                                    <p>{{ $organisation->getName() }} via {{ $username }}</p>
+                                    <br>
+                                @endforeach
+                                
                                 <a href="{{ route('xero.auth.authorize') }}" class="btn btn-primary btn-large mt-4">
                                     Reconnect to Xero
                                 </a>

@@ -43,7 +43,8 @@ class XeroController extends Controller
             'connected'        => $xeroCredentials->exists(),
             'error'            => $error ?? null,
             'organisationName' => $organisationName ?? null,
-            'username'         => $username ?? null
+            'username'         => $username ?? null,
+            'organisations'    => $organisations ?? null
         ]);
     }
 

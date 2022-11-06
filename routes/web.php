@@ -46,7 +46,7 @@ Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('P
 
 Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
 
-Route::get('/test', [InvoiceController::class, 'testMethod'])->name("testMethod");
+Route::get('/test', [ApiAccessController::class, 'testMethod'])->name("testMethod");
 
 
 Route::get('clear_cache', function () {

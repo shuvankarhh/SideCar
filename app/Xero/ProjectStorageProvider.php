@@ -51,7 +51,7 @@ class ProjectStorageProvider implements OauthCredentialManager
         return $this->data('refresh_token');
     }
 
-    public function getTenantId(int $tenant =0): string
+    public function getTenantId(int $tenant = 0): string
     {
         if(!isset($this->data('tenants')[$tenant]))
         {

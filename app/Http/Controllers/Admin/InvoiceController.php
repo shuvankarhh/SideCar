@@ -13,6 +13,7 @@ use XeroAPI\XeroPHP\Models\Accounting\Contact;
 use XeroAPI\XeroPHP\Models\Accounting\LineItem;
 use XeroAPI\XeroPHP\Models\Accounting\Invoice;
 use XeroAPI\XeroPHP\Models\Accounting\Invoices;
+use XeroAPI\XeroPHP\Models\Accounting\LineItemTracking;
 use App\Services\FormatInvoiceData;
 use Webfox\Xero\OauthCredentialManager;
 use XeroAPI\XeroPHP\Api\IdentityApi;
@@ -106,21 +107,21 @@ class InvoiceController extends Controller
                 $xinvoice->setLineAmountTypes("NoTax"); 
                 $xinvoice->setContact($xcontact);
                 
-                $lineItems=[];
+                $lineItems = [];
                 foreach($invoice['glcodes'] as $glcode ){
                     $newLine = new LineItem();
                     $newLine->setDescription($glcode['gldesc']);
                     $newLine->setQuantity("1.0000");
                     $newLine->setUnitAmount($glcode['glamt']);
-                    // $this->project->COA_Break_Character
-                    $newLine->setAccountCode($glcode['glcode']);
-                        //$newLine->setTracking($glcode['glcode']); Signs of Xmas from '150/Signs of Xmas'
-                        // "Tracking": [
-                        //     {
-                        //       "TrackingCategoryID": "e2f2f732-e92a-4f3a9c4d-ee4da0182a13",
-                        //       "Name": "Activity/Workstream",
-                        //       "Option": "Onsite consultancy"
-                        //     }
+            
+
+                    $glCodeDetail = $this->breakGLCode($glcode['glcode']);
+                    $newLine->setAccountCode($glCodeDetail['glcode']);
+                    // Signs of Xmas from '150/Signs of Xmas'
+                    if(!empty($glCodeDetail['tracking']))
+                        $newLine->setTracking($glCodeDetail['tracking']); 
+
+                    $glCodeDetail = [];
                     $lineItems[] = $newLine;
                 }
 
@@ -148,8 +149,8 @@ class InvoiceController extends Controller
     private function makeRequest($xeroCredentials, $inovices)
     {
         if ($xeroCredentials->exists()) {
-            // Tenant ID is based on Project
-            $tenantID = $xeroCredentials->getTenantId();
+            // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination
+            $tenantID = $xeroCredentials->getTenantId(1);
             var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
             $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
             // line 58337 and 58101
@@ -157,9 +158,25 @@ class InvoiceController extends Controller
         }
     }
 
-    protected function breakGLCode($code, $char)
+    protected function breakGLCode($GLcode)
     {
-        return implode($char, $code);
+        $trackingLine = new LineItemTracking();
+        if(!str_contains($GLcode, $this->getProject()->COA_Break_Character))
+        {
+            return [
+                'glcode' => $GLcode,
+                'tracking' => ''
+            ];
+        }
+
+        $cods = explode((string)$this->getProject()->COA_Break_Character, $GLcode);
+        // Name of the name and option (required)
+        $trackingLine->setName('Show'); // category name is set to show 
+        $trackingLine->setOption($cods[1]);// and option (case sensitive)
+        return  [
+            'glcode' => $cods[0] . '-00-000',
+            'tracking' => [$trackingLine]
+        ];
     }
 
 

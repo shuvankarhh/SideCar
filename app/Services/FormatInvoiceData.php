@@ -17,7 +17,6 @@ class FormatInvoiceData
 
     public function rawData()
     {
-        
         return InvoiceImport::where(['project_id' => \Session::get('project_id'), 'imported' => 0])->get();
     }
 
