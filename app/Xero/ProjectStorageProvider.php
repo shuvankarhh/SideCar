@@ -148,6 +148,8 @@ class ProjectStorageProvider implements OauthCredentialManager
 
     public function delete(): void
     {
+        // POST https://identity.xero.com/connect/revocation
+        // revoke token
         $this->project->projectApiSystem->apiAccessToken->delete();
     }
 

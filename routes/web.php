@@ -28,6 +28,7 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     * after authentication has succeeded. The name of this route can be changed in the config file.
     */
     Route::get('/manage/xero', [\App\Http\Controllers\Api\XeroController::class, 'index'])->name('xero.auth.success');
+    Route::get('/revoke', [\App\Http\Controllers\Api\XeroController::class, 'revokeAccessToken'])->name('xero.auth.revoke');
 
     Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload");
     Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile");

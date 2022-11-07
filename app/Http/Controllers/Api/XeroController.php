@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use PhpParser\Node\Expr\FuncCall;
 use Webfox\Xero\OauthCredentialManager;
+use XeroAPI\XeroPHP\Api\IdentityApi;
+use Illuminate\Support\Facades\Http;
 
 class XeroController extends Controller
 {
@@ -52,6 +55,22 @@ class XeroController extends Controller
     // will return access token
     public function getAccessToken(){
         return redirect()->route('xero.auth.authorize');
+    }
+
+    public function revokeAccessToken(OauthCredentialManager $oauth, IdentityApi $identity)
+    {
+        $project = $this->getProject();
+
+       $response = Http::withToken(base64_encode($project->projectApiSystem->api_key . ":" . $project->projectApiSystem->api_secret), 'Basic')
+       ->asForm()
+       ->post('https://identity.xero.com/connect/revocation',[
+            'token' => 'nihupKMw_2UM8-LFNEs7PbCI0KROtwcIUOTW7eRmsW8'
+        ]);
+
+        // $project->projectApiSystem->apiAccessToken()->delete();
+
+        dd($response);
+        
     }
 
 }
