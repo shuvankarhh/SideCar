@@ -57,18 +57,16 @@ class XeroController extends Controller
         return redirect()->route('xero.auth.authorize');
     }
 
-    public function revokeAccessToken(OauthCredentialManager $oauth, IdentityApi $identity)
+    public function revokeAccessToken(OauthCredentialManager $xeroCredentials, IdentityApi $identity)
     {
         $project = $this->getProject();
 
-       $response = Http::withToken(base64_encode($project->projectApiSystem->api_key . ":" . $project->projectApiSystem->api_secret), 'Basic')
-       ->asForm()
-       ->post('https://identity.xero.com/connect/revocation',[
-            'token' => 'nihupKMw_2UM8-LFNEs7PbCI0KROtwcIUOTW7eRmsW8'
+        $response = Http::withToken(base64_encode($project->projectApiSystem->api_key . ":" . $project->projectApiSystem->api_secret), 'Basic')
+        ->asForm()
+        ->post('https://identity.xero.com/connect/revocation',[
+            'token' => $xeroCredentials->getRefreshToken()
         ]);
-
         // $project->projectApiSystem->apiAccessToken()->delete();
-
         dd($response);
         
     }
