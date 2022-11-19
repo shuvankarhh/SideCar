@@ -114,6 +114,7 @@ class CreateSchemaSidecar extends Migration
                 `Ck_Req_Starting_Numb` INT(11) NOT NULL DEFAULT '1000',
                 `COA_Manual_Coding` TINYINT(1) NOT NULL DEFAULT '1',
                 `COA_Break_Character` VARCHAR(1) NOT NULL DEFAULT '/' COLLATE 'utf8_general_ci',
+                `COA_Lookup` VARCHAR(25) NOT NULL DEFAULT '3' COLLATE 'utf8_general_ci',
                 `COA_Break_Number` TINYINT(4) NOT NULL DEFAULT '0',
                 `PJ_Flag_For_Deletion` TINYINT(1) NULL DEFAULT '0',
                 `Deletion_Date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
@@ -127,31 +128,33 @@ class CreateSchemaSidecar extends Migration
         ;");
 
         DB::statement("CREATE TABLE `project_api_systems` (
-                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `project_id` INT(11) NOT NULL,
                 `client_id` INT(11) NULL DEFAULT NULL,
-                `tanent_name` VARCHAR(64) NULL DEFAULT NULL,
-                `name` VARCHAR(26) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-                `description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-                `api_key` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-                `api_secret` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+                `tanent_id` VARCHAR(82) NULL DEFAULT NULL,
+                `name` VARCHAR(26) NOT NULL,
+                `description` VARCHAR(255) NOT NULL,
+                `software` VARCHAR(2) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+                `api_key` VARCHAR(255) NOT NULL,
+                `api_secret` VARCHAR(255) NOT NULL,
+                `access_details` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
                 `created_at` TIMESTAMP NULL DEFAULT NULL,
                 `updated_at` TIMESTAMP NULL DEFAULT NULL,
                 PRIMARY KEY (`id`) USING BTREE
             )
-            COLLATE='utf8mb4_unicode_ci'
+            COLLATE='utf8_general_ci'
             ENGINE=InnoDB
         ;");
 
         DB::statement("CREATE TABLE `api_access_tokens` (
-            `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `project_api_system_id` INT(11) NOT NULL,
             `details` LONGTEXT NULL DEFAULT NULL,
             `created_at` TIMESTAMP NULL DEFAULT NULL,
             `updated_at` TIMESTAMP NULL DEFAULT NULL,
             PRIMARY KEY (`id`) USING BTREE
         )
-        COLLATE='utf8mb4_unicode_ci'
+        COLLATE='utf8_general_ci'
         ENGINE=InnoDB
         ;");
 
@@ -177,6 +180,56 @@ class CreateSchemaSidecar extends Migration
             ENGINE=InnoDB
         ;");
 
+
+        DB::statement("CREATE TABLE `chart_of_accounts` (
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `project_api_system_id` INT(11) NOT NULL,
+            `account_id` VARCHAR(64) NULL DEFAULT NULL,
+            `code` VARCHAR(24) NULL DEFAULT NULL,
+            `name` VARCHAR(64) NULL DEFAULT NULL,
+            `type` VARCHAR(24) NULL DEFAULT NULL,
+            `tax_type` VARCHAR(24) NULL DEFAULT NULL,
+            `currency_code` VARCHAR(4) NULL DEFAULT NULL,
+            `status` VARCHAR(10) NULL DEFAULT NULL,
+            `created_at` TIMESTAMP NULL DEFAULT NULL,
+            `updated_at` TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        )
+        COLLATE='utf8_general_ci'
+        ENGINE=InnoDB
+        ;");
+
+
+        DB::statement("CREATE TABLE `tracking_categories` (
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `project_api_system_id` INT(11) NOT NULL,
+            `tracking_category_id` VARCHAR(64) NULL DEFAULT NULL,
+            `name` VARCHAR(64) NULL DEFAULT NULL,
+            `status` VARCHAR(10) NULL DEFAULT NULL,
+            `created_at` TIMESTAMP NULL DEFAULT NULL,
+            `updated_at` TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        )
+        COLLATE='utf8_general_ci'
+        ENGINE=InnoDB
+        ;");
+
+        DB::statement("CREATE TABLE `tracking_options` (
+            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `tracking_category_id` INT(11) NOT NULL,
+            `tracking_option_id` VARCHAR(64) NULL DEFAULT NULL,
+            `name` VARCHAR(64) NULL DEFAULT NULL,
+            `status` VARCHAR(10) NULL DEFAULT NULL,
+            `created_at` TIMESTAMP NULL DEFAULT NULL,
+            `updated_at` TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        )
+        COLLATE='utf8_general_ci'
+        ENGINE=InnoDB
+        ;");
+
+
+
         DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 
     }
@@ -200,5 +253,8 @@ class CreateSchemaSidecar extends Migration
         Schema::dropIfExists('users_project_list');
         Schema::dropIfExists('project_api_systems');
         Schema::dropIfExists('api_access_tokens');
+        Schema::dropIfExists('chart_of_accounts');
+        Schema::dropIfExists('tracking_categories');
+        Schema::dropIfExists('tracking_options');
     }
 }

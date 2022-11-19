@@ -86,4 +86,30 @@ class ApiAccessController extends Controller
         }
     }
 
+
+    public function getCOA(OauthCredentialManager $xeroCredentials)
+    {
+        if ($xeroCredentials->exists()) {
+            // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination ... need to be
+            $tenantID = $this->getProject()->projectApiSystem->tanent_id;
+            $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
+            $data = $xero->getAccounts($tenantID);
+            (new \App\Xero\StoreChartOfAccounts)->store($this->getProject()->projectApiSystem->id, $data);
+        }
+        return response()->json($data ?? []);
+    }
+
+    public function getTrackingCategories(OauthCredentialManager $xeroCredentials)
+    {
+        if ($xeroCredentials->exists()) {
+            // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination ... need to be
+            //$tenantID = $xeroCredentials->getTenantId(1);
+            $tenantID = $this->getProject()->projectApiSystem->tanent_id;
+            $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
+            $data = $xero->getTrackingCategories($tenantID);
+            (new \App\Xero\StoreTrackingCategories)->store($this->getProject()->projectApiSystem->id, $data);
+        }
+        return response()->json($data ?? []);
+    }
+
 }

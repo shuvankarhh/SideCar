@@ -35,6 +35,14 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     Route::get('/importView', [InvoiceController::class, 'importView'])->name("importView");
     Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice");
     Route::get('/reupload', [InvoiceController::class, 'reupload'])->name("reupload");
+
+
+    Route::get('/coa', [ApiAccessController::class, 'getCOA'])->name("coa");
+    Route::get('/tracking_categories', [ApiAccessController::class, 'getTrackingCategories'])->name("trackingCategories");
+});
+
+Route::get('/', function () {
+    return redirect('/setup');
 });
 
 Route::get('/setup', [SetupController::class, 'index'])->name('Setup');

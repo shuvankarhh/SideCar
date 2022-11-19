@@ -38,11 +38,9 @@ class InvoiceController extends Controller
         {   
             return abort(403, 'Please provide API keys for this project');
         }
-        if($p->projectApiSystem->apiAccessToken()->exists() == false)
-        {   
+        if($p->projectApiSystem->access_details == null){
             return redirect()->route('xero.auth.success');
         }else{
-
             // check if we have access token have access to tenant
             // if not we need to get update access token with new tenant ID
             if ($xeroCredentials->exists()) {
@@ -50,7 +48,6 @@ class InvoiceController extends Controller
                 $tenants = $xeroCredentials->getTenants();
                // dd($identity->getConnections(), $tenants); // f0edac46-76ca-48ce-b479-442cff00012f
             }
-
         }
         return view('pages.upload');
     }
@@ -113,15 +110,14 @@ class InvoiceController extends Controller
                     $newLine->setDescription($glcode['gldesc']);
                     $newLine->setQuantity("1.0000");
                     $newLine->setUnitAmount($glcode['glamt']);
-            
+                    $newLine->setAccountCode($glcode['glcode']);
 
-                    $glCodeDetail = $this->breakGLCode($glcode['glcode']);
-                    $newLine->setAccountCode($glCodeDetail['glcode']);
                     // Signs of Xmas from '150/Signs of Xmas'
-                    if(!empty($glCodeDetail['tracking']))
-                        $newLine->setTracking($glCodeDetail['tracking']); 
-
-                    $glCodeDetail = [];
+                    if(!empty($glcode['tracking'])){
+                        $trackingLines = $this->tracking($glcode['tracking']);
+                        $newLine->setTracking($trackingLines); 
+                    }
+                    
                     $lineItems[] = $newLine;
                 }
 
@@ -131,9 +127,9 @@ class InvoiceController extends Controller
             }
             
         }
-
+       // dd($xinvoices);
         $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-        $this->formatInvoice->updateDBRecords();
+        //$this->formatInvoice->updateDBRecords();
         return view('pages.home', [
             'homepage_link' => config('common.homepage_link')
         ]);
@@ -149,15 +145,34 @@ class InvoiceController extends Controller
     private function makeRequest($xeroCredentials, $inovices)
     {
         if ($xeroCredentials->exists()) {
-            // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination
-            $tenantID = $xeroCredentials->getTenantId(1);
-            var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
+            // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination ... need to be
+            $tenantID = $this->getProject()->projectApiSystem->tanent_id;
             $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
             // line 58337 and 58101
             $xero->updateOrCreateInvoices($tenantID, new Invoices($inovices));
         }
     }
 
+    protected function tracking($trackingCategories)
+    {
+        $trackingLine = new LineItemTracking();
+        foreach($trackingCategories as $category => $option){
+            $trackingLine->setName($category);
+            $trackingLine->setOption($option);
+        }
+        return [$trackingLine];
+    }
+
+    // import view have links to update chart of accounts and tracking
+
+    // https://developer.xero.com/documentation/api/accounting/accounts
+    // chart_of_accounts table ()  
+    // based on COA_lookup limit char
+
+    // get tracking IDs into two table categories and options table
+    // https://developer.xero.com/documentation/api/accounting/trackingcategories
+
+    // Send to ERP
     protected function breakGLCode($GLcode)
     {
         $trackingLine = new LineItemTracking();

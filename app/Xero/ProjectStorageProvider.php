@@ -3,12 +3,11 @@
 namespace App\Xero;
 
 use Illuminate\Session\Store;
-use Webfox\Xero\Oauth2Provider;
 use Webfox\Xero\OauthCredentialManager;
-use App\Models\ApiAccessToken;
 use App\Models\Project;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use App\Xero\OauthTwoProvider;
+use App\Models\ProjectApiSystem;
 /**
  * Check FileStore.php file from reference
  * XeroServiceProvider.php for more detail and Xero.php (config file)
@@ -60,6 +59,11 @@ class ProjectStorageProvider implements OauthCredentialManager
         return $this->data('tenants')[$tenant]['Id'];
     }
 
+    public function getProjectTenant()
+    {
+        return $this->project->projectApiSystem->tanent_id;
+    }
+
     public function getTenants(): ?array
     {
         return $this->data('tenants');
@@ -90,7 +94,7 @@ class ProjectStorageProvider implements OauthCredentialManager
 
     public function exists(): bool
     {
-        return $this->project->projectApiSystem->apiAccessToken()->exists();
+        return !empty($this->project->projectApiSystem->access_details);
     }
 
     public function isExpired(): bool
@@ -123,22 +127,18 @@ class ProjectStorageProvider implements OauthCredentialManager
      */
     public function store(AccessTokenInterface $token, array $tenants = null): void
     {
+        $accessDetails = json_encode([
+            'token'         => $token->getToken(),
+            'refresh_token' => $token->getRefreshToken(),
+            'id_token'      => $token->getValues()['id_token'],
+            'expires'       => $token->getExpires(),
+            'tenants'     => $tenants ?? $this->getTenants()
+        ]);
 
-        $token = ApiAccessToken::updateOrCreate(
-            [
-                'project_api_system_id' => $this->project->projectApiSystem->id
-            ],
-            [
-                'project_api_system_id' => $this->project->projectApiSystem->id,
-                'details'=> json_encode([
-                    'token'         => $token->getToken(),
-                    'refresh_token' => $token->getRefreshToken(),
-                    'id_token'      => $token->getValues()['id_token'],
-                    'expires'       => $token->getExpires(),
-                    'tenants'     => $tenants ?? $this->getTenants()
-                ])
-            ]
-        );
+        $token = ProjectApiSystem::where(['id' => $this->project->projectApiSystem->id, 'api_key' => $this->project->projectApiSystem->api_key])
+        ->update([
+            'access_details'=>  $accessDetails
+        ]);
 
         if ($token === false) {
             throw new \Exception("Failed to write to DB");
@@ -150,7 +150,9 @@ class ProjectStorageProvider implements OauthCredentialManager
     {
         // POST https://identity.xero.com/connect/revocation
         // revoke token
-        $this->project->projectApiSystem->apiAccessToken->delete();
+        ProjectApiSystem::where(['id' => $this->project->projectApiSystem->id])->update([
+            'access_details' => ''
+        ]);
     }
 
     public function getUser(): ?array
@@ -183,7 +185,7 @@ class ProjectStorageProvider implements OauthCredentialManager
         // have to query again to find out the toke stored in DB
         $dataDetail = Project::where('Project_ID', \Session::get('project_id'))->first();
 
-        $cacheData = json_decode($dataDetail->projectApiSystem->apiAccessToken->details, true);
+        $cacheData = json_decode($dataDetail->projectApiSystem->access_details, true);
 
         return empty($key) ? $cacheData : ($cacheData[$key] ?? null);
     }

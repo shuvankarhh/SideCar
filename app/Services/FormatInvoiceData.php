@@ -3,16 +3,18 @@
 namespace App\Services;
 
 use App\Models\InvoiceImport; 
-use App\Models\Project;
+use App\Models\ChartOfAccount;
+use App\Models\TrackingCategory;
+use App\Models\TrackingOption;
 class FormatInvoiceData
 {
     public $data = [];
     public $idsToUpdate=[];
-    public $project_id;
+    public $project;
 
     public function setProject($project)
     {
-        $this->project_id = $project->id;
+        $this->project = $project;
     }
 
     public function rawData()
@@ -36,23 +38,30 @@ class FormatInvoiceData
             $data[$row['vendorid']]['invoices'][$row['invnum']]['invdue'] = $row['invdue'];
 
             // Gl code detail
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glcode'] = $row['glcode'];
             $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glamt'] = (string)$row['glamt'];
             $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['gldesc'] = $row['gldesc'];
+
+            $glCodePrase = $this->parseGLCodeDetail($row['glcode']);
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glcode'] = $glCodePrase['glcode'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['tracking'] = $glCodePrase['tracking'];
+
+            $glCodePrase='';
         }
         return $data;
     }
 
     public function updateDBRecords()
     {
-        InvoiceImport::where(['project_id' => $this->project_id])->update([
-            'imported' => 1,
-        ]);
+        return InvoiceImport::where(['project_id' => $this->project->project_id])
+            ->update([
+                'imported' => 0,
+            ]);
+        
     }
 
     public function removeRecords()
     {
-        InvoiceImport::where(['project_id' => $this->project_id, 'imported' => 0])->delete();
+        InvoiceImport::where(['project_id' => $this->project->project_id, 'imported' => 0])->delete();
     }
 
     /**
@@ -69,6 +78,41 @@ class FormatInvoiceData
             return \Carbon\Carbon::createFromFormat($format, $value);
         }
         return strtotime($date);
+    }
+
+    public function parseGLCodeDetail($GLcode)
+    {
+        if(!str_contains($GLcode, $this->project->COA_Break_Character))
+        {
+            return [
+                'glcode' => $GLcode,
+                'tracking' => ''
+            ];
+        }
+        $cods = explode($this->project->COA_Break_Character, $GLcode);
+
+        // find glcode from char of account
+        $getCOA = ChartOfAccount::where('project_api_system_id', $this->project->projectApiSystem->id)
+        ->where('code', 'LIKE', $cods[0].'%')->first();
+
+        return [
+            'glcode' => $getCOA->code ?? $cods[0],
+            'tracking' => $this->trackingDetails($cods[1])
+        ];
+    }
+
+    // there could be multipule categories
+    public function trackingDetails($trackingOption)
+    {
+        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')->first();
+        if(empty($option)){
+            return '';
+        }
+        $category = $option->trackingCategory()->where('project_api_system_id', $this->project->projectApiSystem->id)->first();
+        // find option category
+        return [
+            $category->name => $option->name
+        ];
     }
 
 }
