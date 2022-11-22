@@ -47,6 +47,8 @@ class ApiAccessController extends Controller
 
             //Store Token and Tenants
             $oauth->store($accessToken, $tenants);
+
+            // After auth store select tenant to store
             //Event::dispatch(new XeroAuthorized($oauth->getData()));
 
             return $this->onSuccess();
@@ -55,15 +57,47 @@ class ApiAccessController extends Controller
         }
     }
 
-
+    // we redirect to file upload page via xero config file
     public function onSuccess()
     {
+        // if already have tenant for project
+        //if(empty($this->getProject()->projectApiSystem->tanent_id))
+          //  return redirect()->route('confirmTenant');
         return Redirect::route(config('xero.oauth.redirect_on_success'));
     }
 
     public function onFailure(\throwable $e)
     {
         throw $e;
+    }
+
+    public function confirmTenant(OauthCredentialManager $xeroCredentials)
+    {
+        if ($xeroCredentials->exists()) {
+            $tenants = $xeroCredentials->getTenants();
+        }
+
+        $key = array_search($this->getProject()->projectApiSystem->tanent_id, array_column($tenants, 'Id'));
+        if($key != false){
+            $selectedTenant = $tenants[$key];
+        }
+
+        return view('pages.confirmTenant',[
+            'tenants' => $tenants,
+            'selectTenant' => $selectedTenant ?? ''
+        ]);
+    }
+
+    public function updateConfirmTenant(Request $request)
+    {
+        $request->validate([
+            'tanent_id' => 'required',
+        ]);
+
+        $this->getProject()->projectApiSystem()->update([
+            'tanent_id' => $request->get('tanent_id')
+        ]);
+        return redirect()->route('upload');
     }
 
     // project is tenants one Xero
@@ -73,16 +107,13 @@ class ApiAccessController extends Controller
     {
         //$invoiceFileImporter = new InvoiceFileImport();
         //Excel::import($invoiceFileImporter, storage_path('app/ACI-AP_Add.xlsx'));
-        if ($xeroCredentials->exists()) {
-            
+        if ($xeroCredentials->exists())
+        {    
             $identity->getConfig()->setAccessToken((string)$xeroCredentials->getAccessToken());
             dd($identity->getConnections());
 
             $tenantID = $xeroCredentials->getTenants();
             var_dump($tenantID); // f0edac46-76ca-48ce-b479-442cff00012f
-            //$xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);
-            // line 58337 and 58101
-           // $xero->updateOrCreateInvoices($tenantID, new Invoices($inovices));
         }
     }
 

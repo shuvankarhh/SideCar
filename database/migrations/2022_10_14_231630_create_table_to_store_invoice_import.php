@@ -22,6 +22,9 @@ class CreateTableToStoreInvoiceImport extends Migration
             $table->string('invdate')->nullable();
             $table->string('invdue')->nullable();
             $table->string('glcode')->nullable();
+            $table->string('coa')->nullable();
+            $table->string('tracking_category')->nullable();
+            $table->string('tracking_option')->nullable();
             $table->string('glamt')->nullable();
             $table->string('gldesc')->nullable();
             $table->string('filename');

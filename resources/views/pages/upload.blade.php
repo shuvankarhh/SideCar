@@ -21,10 +21,10 @@
                         @csrf
 
                         <div class="row mb-3">
-                            <label for="file" class="col-md-4 col-form-label text-md-end">{{ __('File') }}</label>
+                            <label for="filename" class="col-md-4 col-form-label text-md-end">{{ __('File') }}</label>
 
                             <div class="col-md-6">
-                                <input class="form-control" name="file" type="file" id="formFile" required>
+                                <input class="form-control" name="filename" type="file" id="formFile" required>
                             </div>
                         </div>
 
@@ -37,12 +37,49 @@
                         </div>
                     </form>
 
+                    <div x-data="{}">
+                        <button class="btn btn-primary mb-2" x-on:click="chartOfAccountsUpdate">Update Accounts from ERP</button>
+                        <br/>
+                        <button class="btn btn-primary" @click="trackingCategoriesUpdate">Update Tracking Catgories from ERP</button>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
+<script>
+    function chartOfAccountsUpdate(e) {
+        this.$dispatch('loading', true);
+        fetch("{{ route('coa') }}", {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content
+            }
+        })
+        .then(response => response.text())
+        .then(text => {
+            this.$dispatch('loading', false);
+        })
+    }
+
+    function trackingCategoriesUpdate(e) {
+        this.$dispatch('loading', true);
+        fetch("{{ route('trackingCategories') }}", {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content
+            }
+        })
+        .then(response => response.text())
+        .then(text => {
+            this.$dispatch('loading', false);
+        })
+    }
+
+</script>
 
 @stop
 

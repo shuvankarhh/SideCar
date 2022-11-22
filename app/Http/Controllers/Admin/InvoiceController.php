@@ -18,6 +18,10 @@ use App\Services\FormatInvoiceData;
 use Webfox\Xero\OauthCredentialManager;
 use XeroAPI\XeroPHP\Api\IdentityApi;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use App\Rules\UniqueFileNameValidation;
+
 class InvoiceController extends Controller
 {
 
@@ -57,22 +61,25 @@ class InvoiceController extends Controller
     {
         // unique file validation needed
         $request->validate([
-            'file' => ['required', 'mimes:xlx,xls,xlsx']
-        ]);
+                'filename' => ["required",
+                    "mimes:xlx,xls,xlsx",
+                    new UniqueFileNameValidation()
+                ]
+            ]
+        );
 
         // same file name should give error
-        if($request->file('file'))
+        if($request->file('filename'))
         {
-            $path = $request->file('file')->store('excel-files');
+            $path = $request->file('filename')->store('excel-files');
 
-            $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->file->getClientOriginalName());
+            $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->filename->getClientOriginalName(), $this->getProject());
             Excel::import($invoiceFileImporter, storage_path('app/' . $path));
             // delete the file after import
             unlink(storage_path('app/' . $path));
         }
         // need to redirect to create invoices view
         return redirect()->route('importView');
-        //return back()->with('fileUploaded', 'File Imported Successfully.');
     }
 
     public function importView()
@@ -93,7 +100,6 @@ class InvoiceController extends Controller
             //create contact
             $xcontact = new Contact();
             $xcontact->setName($data['name']);
-            //$xcontact->setContactId($data['name']);
 
             foreach ($data['invoices'] as $key => $invoice) {
                 $xinvoice = new Invoice();
@@ -127,7 +133,7 @@ class InvoiceController extends Controller
             }
             
         }
-       // dd($xinvoices);
+
         $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
         //$this->formatInvoice->updateDBRecords();
         return view('pages.home', [

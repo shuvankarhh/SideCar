@@ -11,6 +11,9 @@ class TrackingOption extends Model
     use HasFactory;
     protected $guarded = [];
 
+    const ACTIVE = 'ACTIVE';
+    const ARCHIVED = 'ARCHIVED';
+
     public function trackingCategory(){
         return $this->hasOne(TrackingCategory::class, 'id', 'tracking_category_id');
     }

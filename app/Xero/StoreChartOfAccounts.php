@@ -7,6 +7,7 @@ use App\Models\ChartOfAccount;
 class StoreChartOfAccounts
 {
 
+    // filename value
     public function store($id, $accounts)
     {
         foreach ($accounts as  $account) 

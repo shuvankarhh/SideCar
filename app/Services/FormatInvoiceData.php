@@ -52,7 +52,7 @@ class FormatInvoiceData
 
     public function updateDBRecords()
     {
-        return InvoiceImport::where(['project_id' => $this->project->project_id])
+        return InvoiceImport::where(['project_id' => $this->project->Project_ID])
             ->update([
                 'imported' => 0,
             ]);
@@ -61,7 +61,7 @@ class FormatInvoiceData
 
     public function removeRecords()
     {
-        InvoiceImport::where(['project_id' => $this->project->project_id, 'imported' => 0])->delete();
+        return InvoiceImport::where(['project_id' => $this->project->Project_ID, 'imported' => 0])->delete();
     }
 
     /**
@@ -80,6 +80,7 @@ class FormatInvoiceData
         return strtotime($date);
     }
 
+    // online active
     public function parseGLCodeDetail($GLcode)
     {
         if(!str_contains($GLcode, $this->project->COA_Break_Character))
@@ -93,8 +94,8 @@ class FormatInvoiceData
 
         // find glcode from char of account
         $getCOA = ChartOfAccount::where('project_api_system_id', $this->project->projectApiSystem->id)
+        ->where('status', ChartOfAccount::ACTIVE)
         ->where('code', 'LIKE', $cods[0].'%')->first();
-
         return [
             'glcode' => $getCOA->code ?? $cods[0],
             'tracking' => $this->trackingDetails($cods[1])
@@ -104,7 +105,9 @@ class FormatInvoiceData
     // there could be multipule categories
     public function trackingDetails($trackingOption)
     {
-        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')->first();
+        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')
+        ->where('status', TrackingOption::ACTIVE)
+        ->first();
         if(empty($option)){
             return '';
         }

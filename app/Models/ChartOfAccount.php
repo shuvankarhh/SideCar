@@ -10,4 +10,7 @@ class ChartOfAccount extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    const ACTIVE = 'ACTIVE';
+    const ARCHIVED = 'ARCHIVED';
 }

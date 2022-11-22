@@ -46,7 +46,7 @@ class SetupController extends Controller
      */
     public function postCreateStepOne(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'client_id' => 'required',
         ]);
 

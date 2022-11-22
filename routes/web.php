@@ -37,6 +37,8 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     Route::get('/reupload', [InvoiceController::class, 'reupload'])->name("reupload");
 
 
+    Route::get('/confirm_tenant', [ApiAccessController::class, 'confirmTenant'])->name("confirmTenant");
+    Route::post('/confirm_tenant', [ApiAccessController::class, 'updateConfirmTenant'])->name("confirmTenant");
     Route::get('/coa', [ApiAccessController::class, 'getCOA'])->name("coa");
     Route::get('/tracking_categories', [ApiAccessController::class, 'getTrackingCategories'])->name("trackingCategories");
 });
