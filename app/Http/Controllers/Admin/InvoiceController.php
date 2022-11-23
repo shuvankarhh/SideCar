@@ -35,23 +35,15 @@ class InvoiceController extends Controller
     // Check if access key exists for the project and tenant
     // if not redirect to manage api access page
     // Also need to check if we have access to tenant
-    public function index(Request $request, OauthCredentialManager $xeroCredentials, IdentityApi $identity)
+    public function index()
     {
         $p = \App\Models\Project::where('Project_ID', \Session::get('project_id'))->first();
         if($p->projectApiSystem()->exists() == false)
-        {   
-            return abort(403, 'Please provide API keys for this project');
+        {
+            return redirect()->route('apiInfo');
         }
         if($p->projectApiSystem->access_details == null){
             return redirect()->route('xero.auth.success');
-        }else{
-            // check if we have access token have access to tenant
-            // if not we need to get update access token with new tenant ID
-            if ($xeroCredentials->exists()) {
-                //$identity->getConfig()->setAccessToken((string)$xeroCredentials->getAccessToken());
-                $tenants = $xeroCredentials->getTenants();
-               // dd($identity->getConnections(), $tenants); // f0edac46-76ca-48ce-b479-442cff00012f
-            }
         }
         return view('pages.upload');
     }

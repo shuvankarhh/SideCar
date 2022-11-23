@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ApiAccessToken;
 use App\Models\ChartOfAccount;
 use App\Models\TrackingCategory;
+use App\Traits\Encryptable;
 
 class ProjectApiSystem extends Model
 {
-    use HasFactory;
+    use HasFactory, Encryptable;
 
     protected $guarded = [];
+
+    protected $encryptable = [
+        'api_key',
+        'api_secret'
+    ];
 
     public function project()
     {

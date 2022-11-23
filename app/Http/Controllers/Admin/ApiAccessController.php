@@ -4,21 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Project;
-use App\Models\Client;
+use App\Models\ProjectApiSystem;
 use Illuminate\Support\Facades\Log;
-use Webfox\Xero\Oauth2Provider;
 use App\Xero\OauthTwoProvider;
 use XeroAPI\XeroPHP\Api\IdentityApi;
 use Illuminate\Support\Facades\Event;
 use Webfox\Xero\Events\XeroAuthorized;
 use Webfox\Xero\OauthCredentialManager;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class ApiAccessController extends Controller
 {
 
+    // call back URL https://sidecar.local/xero/auth/callback
     public function index(Request $request, OauthCredentialManager $oauth, IdentityApi $identity, OauthTwoProvider $provider)
     {
         try {
@@ -31,9 +29,9 @@ class ApiAccessController extends Controller
 
             $provider->setClientID($this->getProject()->projectApiSystem->api_key);
             $provider->setClientSecret($this->getProject()->projectApiSystem->api_secret);
-            
 
             $accessToken = $provider->getAccessToken('authorization_code', $request->only('code'));
+
             $identity->getConfig()->setAccessToken((string)$accessToken->getToken());
 
             //Iterate tenants
@@ -45,6 +43,7 @@ class ApiAccessController extends Controller
                 ];
             }
 
+            Log::info(json_encode($accessToken));
             //Store Token and Tenants
             $oauth->store($accessToken, $tenants);
 
@@ -61,8 +60,8 @@ class ApiAccessController extends Controller
     public function onSuccess()
     {
         // if already have tenant for project
-        //if(empty($this->getProject()->projectApiSystem->tanent_id))
-          //  return redirect()->route('confirmTenant');
+        if(empty($this->getProject()->projectApiSystem->tanent_id))
+            return redirect()->route('confirmTenant');
         return Redirect::route(config('xero.oauth.redirect_on_success'));
     }
 
@@ -141,6 +140,33 @@ class ApiAccessController extends Controller
             (new \App\Xero\StoreTrackingCategories)->store($this->getProject()->projectApiSystem->id, $data);
         }
         return response()->json($data ?? []);
+    }
+
+    public function apiInfo()
+    {
+        return view('setup.apiSetup', []);
+    }
+
+    public function storeApiInfo(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'software' => 'required',
+            'api_key' => 'required|min:10',
+            'api_secret' => 'required|min:10'
+        ]);
+
+        ProjectApiSystem::create([
+            'project_id' => $this->getProject()->Project_ID,
+            'client_id' => $this->getClient()->Client_ID,
+            'name' => $request->get('name'),
+            'description' => $request->get('description'),
+            'software' => $request->get('software'),
+            'api_key' => $request->get('api_key'),
+            'api_secret' => $request->get('api_secret')
+        ]);
+
+        return redirect()->route('upload');
     }
 
 }

@@ -12,7 +12,7 @@
     
             <table class="table table-bordered">
                 <thead>
-                    <tr>
+                    <tr class="text-center">
                         <th scope="col">Vendor ID</th>
                         <th scope="col">Invoice Num</th>
                         <th scope="col">Invoice Amt</th>

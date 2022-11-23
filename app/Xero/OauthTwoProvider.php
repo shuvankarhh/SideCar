@@ -6,7 +6,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 
 class OauthTwoProvider extends GenericProvider
 {
-    // overwrite client_ID and Client_secret
+    // overwrite client_ID (api_key) and Client_secret (api_secret)
     public function setClientID($val)
     {
         $this->clientId = $val;

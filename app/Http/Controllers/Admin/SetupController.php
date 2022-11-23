@@ -49,8 +49,6 @@ class SetupController extends Controller
         $request->validate([
             'client_id' => 'required',
         ]);
-
-        // $request->session()->get('client_id');
         $request->session()->put('client_id', $request->get('client_id'));
 
         return redirect()->route('StepTwo');
@@ -82,7 +80,7 @@ class SetupController extends Controller
      */
     public function postCreateStepTwo(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'project_id' => 'required'
         ]);
 

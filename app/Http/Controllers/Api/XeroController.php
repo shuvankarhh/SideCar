@@ -4,15 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use PhpParser\Node\Expr\FuncCall;
 use Webfox\Xero\OauthCredentialManager;
 use XeroAPI\XeroPHP\Api\IdentityApi;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class XeroController extends Controller
 {
 
-    // call back URL https://sidecar.local/xero/auth/callback
     public function index(Request $request, OauthCredentialManager $xeroCredentials)
     {
         try {
@@ -42,6 +41,8 @@ class XeroController extends Controller
             $error = $e->getMessage();
         }
 
+        Log::info(json_encode($request));
+
         return view('xero', [
             'connected'        => $xeroCredentials->exists(),
             'error'            => $error ?? null,
@@ -67,8 +68,8 @@ class XeroController extends Controller
             'token' => $xeroCredentials->getRefreshToken()
         ]);
         // $project->projectApiSystem->apiAccessToken()->delete();
-        dd($response);
-        
+
+        return response()->json($response ?? []);
     }
 
 }

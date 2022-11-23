@@ -36,6 +36,8 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     Route::get('/createInvoice', [InvoiceController::class, 'createInvoice'])->name("createInvoice");
     Route::get('/reupload', [InvoiceController::class, 'reupload'])->name("reupload");
 
+    Route::get('/api_info', [ApiAccessController::class, 'apiInfo'])->name("apiInfo");
+    Route::post('/api_info', [ApiAccessController::class, 'storeApiInfo'])->name("apiInfo");
 
     Route::get('/confirm_tenant', [ApiAccessController::class, 'confirmTenant'])->name("confirmTenant");
     Route::post('/confirm_tenant', [ApiAccessController::class, 'updateConfirmTenant'])->name("confirmTenant");

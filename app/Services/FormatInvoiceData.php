@@ -41,11 +41,9 @@ class FormatInvoiceData
             $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glamt'] = (string)$row['glamt'];
             $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['gldesc'] = $row['gldesc'];
 
-            $glCodePrase = $this->parseGLCodeDetail($row['glcode']);
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glcode'] = $glCodePrase['glcode'];
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['tracking'] = $glCodePrase['tracking'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glcode'] = $row['coa'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['tracking'] = [$row['tracking_category'] => $row['tracking_option']];
 
-            $glCodePrase='';
         }
         return $data;
     }
@@ -78,44 +76,6 @@ class FormatInvoiceData
             return \Carbon\Carbon::createFromFormat($format, $value);
         }
         return strtotime($date);
-    }
-
-    // online active
-    public function parseGLCodeDetail($GLcode)
-    {
-        if(!str_contains($GLcode, $this->project->COA_Break_Character))
-        {
-            return [
-                'glcode' => $GLcode,
-                'tracking' => ''
-            ];
-        }
-        $cods = explode($this->project->COA_Break_Character, $GLcode);
-
-        // find glcode from char of account
-        $getCOA = ChartOfAccount::where('project_api_system_id', $this->project->projectApiSystem->id)
-        ->where('status', ChartOfAccount::ACTIVE)
-        ->where('code', 'LIKE', $cods[0].'%')->first();
-        return [
-            'glcode' => $getCOA->code ?? $cods[0],
-            'tracking' => $this->trackingDetails($cods[1])
-        ];
-    }
-
-    // there could be multipule categories
-    public function trackingDetails($trackingOption)
-    {
-        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')
-        ->where('status', TrackingOption::ACTIVE)
-        ->first();
-        if(empty($option)){
-            return '';
-        }
-        $category = $option->trackingCategory()->where('project_api_system_id', $this->project->projectApiSystem->id)->first();
-        // find option category
-        return [
-            $category->name => $option->name
-        ];
     }
 
 }

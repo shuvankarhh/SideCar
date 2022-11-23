@@ -8,6 +8,7 @@ use App\Models\Project;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use App\Xero\OauthTwoProvider;
 use App\Models\ProjectApiSystem;
+use Illuminate\Support\Facades\Crypt;
 /**
  * Check FileStore.php file from reference
  * XeroServiceProvider.php for more detail and Xero.php (config file)
@@ -135,11 +136,12 @@ class ProjectStorageProvider implements OauthCredentialManager
             'tenants'     => $tenants ?? $this->getTenants()
         ]);
 
-        $token = ProjectApiSystem::where(['id' => $this->project->projectApiSystem->id, 'api_key' => $this->project->projectApiSystem->api_key])
+        $token = ProjectApiSystem::where(['id' => $this->project->projectApiSystem->id, 'api_key' => base64_encode($this->project->projectApiSystem->api_key)])
         ->update([
             'access_details'=>  $accessDetails
         ]);
 
+        
         if ($token === false) {
             throw new \Exception("Failed to write to DB");
         }
