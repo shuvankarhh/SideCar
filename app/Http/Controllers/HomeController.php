@@ -32,7 +32,6 @@ class HomeController extends Controller
             $q->where('Company_Name','=', '20th Century Props');
 
         })->first();
-        dd($c->company->Company_Name);
         
         $projects = Project::all();
         return view('home', [
