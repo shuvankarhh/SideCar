@@ -30,10 +30,10 @@ class CreateDummyDataSeeder extends Seeder
             (3,'20th Century Props','95-4478033','',NULL,NULL,'8KZkKehh',NULL,NULL);");
 
         // `Project_ID`, `Client_ID` 
-        DB::statement("INSERT INTO `projects` VALUES 
-            (1,1,'Corporate','Description of the Project','100000',100000,1000,1,'/',0,0,'0000-00-00 00:00:00',0,0,''),
-            (2,2,'Corporate','Description of the Project','100000',100000,1000,0,'/',1,0,'0000-00-00 00:00:00',0,0,''),
-            (3,3,'Corporate','Description of the Project','100000',100000,1000,0,'/',1,0,'0000-00-00 00:00:00',0,0,'');
+        DB::statement("INSERT INTO `projects` (`Project_ID`, `Client_ID`, `Project_Name`, `Project_Description`, `Project_Prod_Number`, `PO_Starting_Number`, `Ck_Req_Starting_Numb`, `COA_Manual_Coding`, `COA_Break_Character`, `COA_Break_Number`, `PJ_Flag_For_Deletion`, `Deletion_Date`, `Deletion_Complete`, `PJ_Deletion_Requestor`, `PJ_Deletion_Name`) VALUES
+        (1, 1, 'Project_one', 'Description of the Project', '100000', 100000, 1000, 1, '/', 0, 0, '2022-01-01 00:00:00', 0, 0, ''),
+        (2, 2, 'Project_Two', 'Description of the Project', '100000', 100000, 1000, 0, '/', 1, 0, '2022-01-01 00:00:00', 0, 0, ''),
+        (3, 3, 'Project_three', 'Description of the Project', '100000', 100000, 1000, 0, '/', 1, 0, '2022-01-01 00:00:00', 0, 0, '')
         ");
 
 

@@ -75,6 +75,7 @@ Route::get('migrate', function () {
 Route::get('db_wipe', function () {
     \Artisan::call('db:wipe');
     \Artisan::call('migrate');
+    Artisan::call('db:seed', array('--class' => 'CreateDummyDataSeeder'));
     dd("run migrations");
 });
 

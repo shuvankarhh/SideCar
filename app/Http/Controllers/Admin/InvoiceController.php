@@ -45,6 +45,9 @@ class InvoiceController extends Controller
         if($p->projectApiSystem->access_details == null){
             return redirect()->route('xero.auth.success');
         }
+        if($p->projectApiSystem->tanent_id == null){
+            return redirect()->route('confirmTenant');
+        }
         return view('pages.upload');
     }
 
