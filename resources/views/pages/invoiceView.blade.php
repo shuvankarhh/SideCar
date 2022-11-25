@@ -8,7 +8,6 @@
                 <a class="btn btn-danger" href="{{ route('reupload') }}">Reupload</a>
                 <a class="btn btn-primary" href="{{ route('createInvoice') }}">Export To ERP</a> 
             </div>
-            
     
             <table class="table table-bordered">
                 <thead>

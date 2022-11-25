@@ -17,7 +17,7 @@ class CreateDummyDataSeeder extends Seeder
      * @return void
      */
 
-     //php artisan db:seed --class=CreateDummyDataSeeder
+     // php artisan db:seed --class=CreateDummyDataSeeder
     public function run()
     {
         //`Client_ID`, `Client_Number`, `Client_Type`
@@ -37,6 +37,12 @@ class CreateDummyDataSeeder extends Seeder
         ");
 
 
+        $this->apiSetup();
+        
+    }
+
+    protected function apiSetup()
+    {
         ProjectApiSystem::create([
             "project_id" => 1,
             "client_id" => 1,
@@ -54,9 +60,7 @@ class CreateDummyDataSeeder extends Seeder
             "description" => "",
             "software" => "Xero",
             "api_key" => "DECBE2A6A10343E58518A449A6F8BFC1",
-            "api_secret"=> "LiYP-jdHPdf4yTTPpGlsxtAS01h3fUwHtr0hCfy0aqT8Vasd"
+            "api_secret"=> "tkuHI0n4KahlIvKvmT4cMwTWN9R9oaWTN2inzUPWRYL23NDU"
         ]);
-
-        
     }
 }

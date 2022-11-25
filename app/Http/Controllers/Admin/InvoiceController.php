@@ -130,7 +130,7 @@ class InvoiceController extends Controller
         }
 
         $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-        //$this->formatInvoice->updateDBRecords();
+        $this->formatInvoice->updateDBRecords();
         return view('pages.home', [
             'homepage_link' => config('common.homepage_link')
         ]);

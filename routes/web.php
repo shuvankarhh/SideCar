@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\ApiAccessController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +20,7 @@ use Illuminate\Http\Request;
 */
 
 
-Route::middleware(['RestrictedUrl'])->group(function(){
+Route::middleware(['auth','RestrictedUrl'])->group(function(){
 
     //Route::get('/{home?}', [HomeController::class, 'index'])->name('home');
 
@@ -28,6 +29,7 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     * after authentication has succeeded. The name of this route can be changed in the config file.
     */
     Route::get('/manage/xero', [\App\Http\Controllers\Api\XeroController::class, 'index'])->name('xero.auth.success');
+    Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
     Route::get('/revoke', [\App\Http\Controllers\Api\XeroController::class, 'revokeAccessToken'])->name('xero.auth.revoke');
 
     Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload");
@@ -45,19 +47,31 @@ Route::middleware(['RestrictedUrl'])->group(function(){
     Route::get('/tracking_categories', [ApiAccessController::class, 'getTrackingCategories'])->name("trackingCategories");
 });
 
+
+Route::middleware(['auth'])->group(function(){
+
+    Route::get('/setup', [SetupController::class, 'index'])->name('Setup');
+
+    Route::get('/step_one', [SetupController::class, 'createStepOne'])->name('StepOne');
+    Route::post('/step_one', [SetupController::class, 'postCreateStepOne'])->name('PostStepOne');
+
+    Route::get('/step_two', [SetupController::class, 'createStepTwo'])->name('StepTwo');
+    Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('PostStepTwo');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('userEdit');
+    Route::post('/user/edit/{id}', [UserController::class, 'update'])->name('userUpdate');
+    Route::post('/user/delete/{id}', [UserController::class, 'delete'])->name('userDelete');
+    
+});
+
 Route::get('/', function () {
     return redirect('/setup');
 });
 
-Route::get('/setup', [SetupController::class, 'index'])->name('Setup');
 
-Route::get('/step_one', [SetupController::class, 'createStepOne'])->name('StepOne');
-Route::post('/step_one', [SetupController::class, 'postCreateStepOne'])->name('PostStepOne');
 
-Route::get('/step_two', [SetupController::class, 'createStepTwo'])->name('StepTwo');
-Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('PostStepTwo');
 
-Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
 
 Route::get('/test', [ApiAccessController::class, 'testMethod'])->name("testMethod");
 

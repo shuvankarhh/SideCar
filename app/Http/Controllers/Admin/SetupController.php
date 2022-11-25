@@ -50,6 +50,7 @@ class SetupController extends Controller
             'client_id' => 'required',
         ]);
         $request->session()->put('client_id', $request->get('client_id'));
+        $request->session()->forget('project_id');
 
         return redirect()->route('StepTwo');
     }
@@ -62,6 +63,10 @@ class SetupController extends Controller
      */
     public function createStepTwo(Request $request)
     {
+        if(!\Session::has('client_id')){
+            return redirect()->route('StepOne'); 
+        }
+
         $clientID = $request->session()->get('client_id');
         
         $c = Client::whereHas('company', function($q){

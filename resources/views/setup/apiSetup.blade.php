@@ -5,7 +5,7 @@
     <div class="row h-100 w-100 justify-content-center align-items-center align-content-center flex-column m-auto">
         <div class="col-md-8">
         <div class="card">
-                <div class="card-header">{{ __('Setup - Step One') }}</div>
+                <div class="card-header">{{ __('Provide API Information') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('apiInfo') }}">

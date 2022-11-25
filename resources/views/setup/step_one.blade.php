@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Setup - Step One') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('PostStepOne') }}">
+                    <form method="POST" id="client_id_form" action="{{ route('PostStepOne') }}" x-data="submitClient()" @submit.prevent="submitForm">
                         @csrf
 
                         <div class="row mb-3">
@@ -16,7 +16,7 @@
 
                             <div class="col-md-6">
                        
-                                <select name="client_id" class="form-control" required autofocus>
+                                <select name="client_id" class="form-control" required x-model="formData.client_id" x-on:change="submitForm">
                                     @foreach ($clients as $key => $value)
                                     <option value="{{ $key }}"> {{$value}}</option>
                                     @endforeach
@@ -36,7 +36,21 @@
             </div>
         </div>
 
-        
     </div>
 </div>
+
+<script>
+    function submitClient() {
+        return {
+            formData:{
+                client_id:""
+            },
+            submitForm() {
+                this.$dispatch('loading', true);
+                document.getElementById('client_id_form').submit();
+            }
+        }
+    }
+</script>
+
 @endsection

@@ -9,7 +9,7 @@
 
                 <div class="card-body">
                     @if (count($errors) > 0)
-                        <div class="alert alert-danger">
+                        <div id="error_display" class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -17,14 +17,14 @@
                             </ul>
                         </div>
                     @endif
-                    <form method="POST" action="{{ route('saveFile') }}"  enctype="multipart/form-data">
+                    <form method="POST" id="file_upload_form" action="{{ route('saveFile') }}"  enctype="multipart/form-data" x-data="fileUploadForm()" @submit.prevent="submitForm">
                         @csrf
 
                         <div class="row mb-3">
                             <label for="filename" class="col-md-4 col-form-label text-md-end">{{ __('File') }}</label>
 
                             <div class="col-md-6">
-                                <input class="form-control" name="filename" type="file" id="formFile" required>
+                                <input class="form-control" name="filename" type="file" id="formFile" required x-on:click="clearErrors">
                             </div>
                         </div>
 
@@ -51,6 +51,21 @@
 
 
 <script>
+
+    function fileUploadForm() {
+        return{
+            submitForm(){
+                this.$dispatch('loading', true);
+                document.getElementById('file_upload_form').submit();
+            },
+            clearErrors(){
+                document.getElementById("error_display").style.display = "none";
+            }
+        }
+    }
+        
+    
+
     function chartOfAccountsUpdate(e) {
         this.$dispatch('loading', true);
         fetch("{{ route('coa') }}", {

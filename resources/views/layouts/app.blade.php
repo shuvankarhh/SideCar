@@ -38,18 +38,18 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
+                    @auth
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('reset') }}">Reset |</a>
+                            <a class="nav-link" href="{{ route('reset') }}">| Reset |</a>
                         </li>
                     </ul>
+                    @endauth
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto text-white">
 
-                        @if(Session::has('client_id'))
-                            <x-setupDetails></x-setupDetails>
-                        @endif
+                        
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
@@ -59,18 +59,26 @@
                             @endif
 
                         @else
+                           
+                            <x-setupDetails></x-setupDetails>
+                            
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    
+                                    @role('admin')
+                                        <a class="dropdown-item" href="{{ route('users') }}">{{ __('User management') }}</a>
+                                        <a class="dropdown-item" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    @endrole
+                                    
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-                                    <a class="dropdown-item" href="{{ route('register') }}">{{ __('Register') }}</a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf

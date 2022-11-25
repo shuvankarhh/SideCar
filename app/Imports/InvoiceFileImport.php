@@ -108,17 +108,26 @@ class InvoiceFileImport implements ToCollection, WithHeadingRow
     // there could be multipule categories
     public function trackingDetails($trackingOption)
     {
-        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')
-        ->where('status', TrackingOption::ACTIVE)
-        ->first();
-        if(empty($option)){
-            return '';
+        $data = [
+            'category' =>  "",
+            'option' =>  ""
+        ];
+
+        $option = TrackingOption::where('name', 'Like', '%'.$trackingOption.'%')->where('status', TrackingOption::ACTIVE)->first();
+        if (empty($option)) {
+            return $data;
         }
+
         $category = $option->trackingCategory()->where('project_api_system_id', $this->project->projectApiSystem->id)->first();
+
+        if (empty($category)) {
+            return $data;
+        }
+        
         // find option category
         return [
-            'category' => $category->name,
-            'option' => $option->name
+            'category' => $category->name ?? "",
+            'option' => $option->name ?? ""
         ];
     }
 

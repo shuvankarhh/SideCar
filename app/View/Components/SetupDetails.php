@@ -31,7 +31,12 @@ class SetupDetails extends Component
      */
     public function render()
     {
-        return view('components.setupDetails');
+        $viewData = [
+            'client' => $this->client ?? '',
+            'project' => $this->project ?? '',
+            'fileUpload' => !empty($this->client) && !empty($this->project)
+        ];
+        return view('components.setupDetails', compact('viewData'));
     }
 
 }
