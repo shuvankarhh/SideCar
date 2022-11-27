@@ -25,8 +25,6 @@ class ApiAccessController extends Controller
                 'state' => ['required', 'string', "in:{$oauth->getState()}"]
             ]);
 
-            Log::info(json_encode($request));
-
             $provider->setClientID($this->getProject()->projectApiSystem->api_key);
             $provider->setClientSecret($this->getProject()->projectApiSystem->api_secret);
 
@@ -43,7 +41,7 @@ class ApiAccessController extends Controller
                 ];
             }
 
-            Log::info(json_encode($accessToken));
+            //Log::info(json_encode($accessToken));
             //Store Token and Tenants
             $oauth->store($accessToken, $tenants);
 

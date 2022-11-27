@@ -140,8 +140,8 @@ class InvoiceController extends Controller
             
         }
 
-        //$this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-        //$this->formatInvoice->updateDBRecords();
+        $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
+        $this->formatInvoice->updateDBRecords();
 
         return redirect()->route('upload')->with('message', 'Invoice created on ERP. Please verify in draft incvoices.');
 
