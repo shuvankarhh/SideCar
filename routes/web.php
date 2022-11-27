@@ -69,13 +69,6 @@ Route::get('/', function () {
     return redirect('/setup');
 });
 
-
-
-
-
-Route::get('/test', [ApiAccessController::class, 'testMethod'])->name("testMethod");
-
-
 Route::get('clear_cache', function () {
     \Artisan::call('optimize:clear');
     dd("clear cache");
@@ -86,11 +79,16 @@ Route::get('migrate', function () {
     dd("run migrations");
 });
 
-Route::get('db_wipe', function () {
+Route::get('wipe', function () {
     \Artisan::call('db:wipe');
     \Artisan::call('migrate');
-    Artisan::call('db:seed', array('--class' => 'CreateDummyDataSeeder'));
     dd("run migrations");
+});
+
+Route::get('seeder', function () {
+    \Artisan::call('db:seed', array('--class' => 'CreateAdminUserSeeder'));
+    \Artisan::call('db:seed', array('--class' => 'CreateDummyDataSeeder'));
+    dd("run seeder");
 });
 
 Route::get('/reset', function(Request $request) {

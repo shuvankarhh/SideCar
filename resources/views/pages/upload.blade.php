@@ -8,8 +8,14 @@
                 <div class="card-header">{{ __('Upload file to import') }}</div>
 
                 <div class="card-body">
+                    
+                    @if(session()->has('message'))
+                        <div class="alert alert-success">
+                            {{ session()->get('message') }}
+                        </div>
+                    @endif
                     @if (count($errors) > 0)
-                        <div id="error_display" class="alert alert-danger">
+                        <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -59,12 +65,12 @@
                 document.getElementById('file_upload_form').submit();
             },
             clearErrors(){
-                document.getElementById("error_display").style.display = "none";
+                document.querySelectorAll(".alert").forEach(ele => {
+                    ele.classList.add('d-none');
+                });
             }
         }
     }
-        
-    
 
     function chartOfAccountsUpdate(e) {
         this.$dispatch('loading', true);

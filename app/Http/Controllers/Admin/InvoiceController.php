@@ -63,6 +63,9 @@ class InvoiceController extends Controller
             ]
         );
 
+        // 6 mins
+        //ini_set('max_execution_time', 360);
+
         // same file name should give error
         if($request->file('filename'))
         {
@@ -77,11 +80,19 @@ class InvoiceController extends Controller
         return redirect()->route('importView');
     }
 
-    public function importView()
+    public function importView(OauthCredentialManager $xeroCredentials)
     {
         $this->formatInvoice->setProject($this->getProject());
+
+        $tenants = $xeroCredentials->getTenants();
+        $key = array_search($this->getProject()->projectApiSystem->tanent_id, array_column($tenants, 'Id'));
+        if($key != false){
+            $selectedTenant = $tenants[$key];
+        }
+
         return view('pages.invoiceView',[
-            'data' => $this->formatInvoice->rawData()
+            'data' => $this->formatInvoice->rawData(),
+            'selectedTenant' => $selectedTenant ?? ''
         ]);
     }
 
@@ -129,11 +140,11 @@ class InvoiceController extends Controller
             
         }
 
-        $this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
-        $this->formatInvoice->updateDBRecords();
-        return view('pages.home', [
-            'homepage_link' => config('common.homepage_link')
-        ]);
+        //$this->makeRequest($xeroCredentials, ['invoices'=> $xinvoices]);
+        //$this->formatInvoice->updateDBRecords();
+
+        return redirect()->route('upload')->with('message', 'Invoice created on ERP. Please verify in draft incvoices.');
+
     }
 
     public function reupload()
@@ -172,28 +183,6 @@ class InvoiceController extends Controller
 
     // get tracking IDs into two table categories and options table
     // https://developer.xero.com/documentation/api/accounting/trackingcategories
-
-    // Send to ERP
-    protected function breakGLCode($GLcode)
-    {
-        $trackingLine = new LineItemTracking();
-        if(!str_contains($GLcode, $this->getProject()->COA_Break_Character))
-        {
-            return [
-                'glcode' => $GLcode,
-                'tracking' => ''
-            ];
-        }
-
-        $cods = explode((string)$this->getProject()->COA_Break_Character, $GLcode);
-        // Name of the name and option (required)
-        $trackingLine->setName('Show'); // category name is set to show 
-        $trackingLine->setOption($cods[1]);// and option (case sensitive)
-        return  [
-            'glcode' => $cods[0] . '-00-000',
-            'tracking' => [$trackingLine]
-        ];
-    }
 
 
 }
