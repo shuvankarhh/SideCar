@@ -85,14 +85,19 @@ class ApiAccessController extends Controller
         ]);
     }
 
-    public function updateConfirmTenant(Request $request)
+    public function updateConfirmTenant(Request $request, OauthCredentialManager $xeroCredentials)
     {
         $request->validate([
             'tanent_id' => 'required',
         ]);
 
+        $tenants = $xeroCredentials->getTenants();
+        $key = array_search($request->get('tanent_id'), array_column($tenants, 'Id'));
+        $selectedTenant = $tenants[$key];
+
         $this->getProject()->projectApiSystem()->update([
-            'tanent_id' => $request->get('tanent_id')
+            'tanent_id' => $request->get('tanent_id'),
+            'tanent_name' => $selectedTenant['Name'] ?? NULL
         ]);
         return redirect()->route('upload');
     }

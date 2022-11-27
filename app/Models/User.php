@@ -14,7 +14,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    protected $table = 'laravel_users';
     /**
      * The attributes that are mass assignable.
      *

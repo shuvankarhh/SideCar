@@ -71,7 +71,7 @@
                                     
                                     @role('admin')
                                         <a class="dropdown-item" href="{{ route('users') }}">{{ __('User management') }}</a>
-                                        <a class="dropdown-item" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                        <a class="dropdown-item" href="{{ route('userCreate') }}">{{ __('Create User') }}</a>
                                     @endrole
                                     
                                     <a class="dropdown-item" href="{{ route('logout') }}"

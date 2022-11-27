@@ -59,9 +59,11 @@ Route::middleware(['auth'])->group(function(){
     Route::post('/step_two', [SetupController::class, 'postcreateStepTwo'])->name('PostStepTwo');
 
     Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::get('/user/create', [UserController::class, 'create'])->name('userCreate');
+    Route::post('/users/create', [UserController::class, 'store'])->name('storeUser');
     Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('userEdit');
     Route::post('/user/edit/{id}', [UserController::class, 'update'])->name('userUpdate');
-    Route::post('/user/delete/{id}', [UserController::class, 'delete'])->name('userDelete');
+    Route::get('/user/delete/{id}', [UserController::class, 'delete'])->name('userDelete');
     
 });
 

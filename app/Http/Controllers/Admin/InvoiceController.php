@@ -80,19 +80,12 @@ class InvoiceController extends Controller
         return redirect()->route('importView');
     }
 
-    public function importView(OauthCredentialManager $xeroCredentials)
+    public function importView()
     {
         $this->formatInvoice->setProject($this->getProject());
-
-        $tenants = $xeroCredentials->getTenants();
-        $key = array_search($this->getProject()->projectApiSystem->tanent_id, array_column($tenants, 'Id'));
-        if($key != false){
-            $selectedTenant = $tenants[$key];
-        }
-
         return view('pages.invoiceView',[
             'data' => $this->formatInvoice->rawData(),
-            'selectedTenant' => $selectedTenant ?? ''
+            'tenantName' => $this->getProject()->projectApiSystem->tanent_name ?? ''
         ]);
     }
 

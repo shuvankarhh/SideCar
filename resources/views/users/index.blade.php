@@ -4,6 +4,12 @@
 <div class="container d-flex min-vh-100 mt-5">
     <div class="row h-100 w-100 justify-content-center align-items-center align-content-center flex-column mt-2">
         <div class="col-md-12 bg-white">
+
+            @if(session()->has('message'))
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
+            @endif
     
             <table class="table table-bordered">
                 <thead>

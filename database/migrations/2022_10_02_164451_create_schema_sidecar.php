@@ -16,7 +16,7 @@ class CreateSchemaSidecar extends Migration
     {
         DB::statement("SET FOREIGN_KEY_CHECKS=0;");
 
-        DB::statement("CREATE TABLE `users` (
+        DB::statement("CREATE TABLE `users_fthree` (
             `User_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'Database generated unique User number',
             `Default_Project` INT(11) NOT NULL COMMENT 'Client ID from Clients table',
             `User_Login` VARCHAR(30) NOT NULL COMMENT 'User login name' COLLATE 'utf8_general_ci',
@@ -153,6 +153,7 @@ class CreateSchemaSidecar extends Migration
                 `project_id` INT(11) NOT NULL,
                 `client_id` INT(11) NOT NULL,
                 `tanent_id` VARCHAR(82) NULL DEFAULT NULL,
+                `tanent_name` VARCHAR(64) NULL DEFAULT NULL,
                 `name` VARCHAR(26) NOT NULL,
                 `description` VARCHAR(255) NULL DEFAULT NULL,
                 `software` VARCHAR(10) NULL DEFAULT NULL,
@@ -262,7 +263,7 @@ class CreateSchemaSidecar extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users_fthree');
         Schema::dropIfExists('addresses');
         Schema::dropIfExists('clients');
         Schema::dropIfExists('companies');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -17,6 +18,41 @@ class UserController extends Controller
     {
         $users = User::all();
         return view('users.index', compact('users'));
+    }
+
+
+     /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    public function create()
+    {
+        return view('users.create');
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\Models\User
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:6'],
+        ]);
+        
+        User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+        ]);
+
+        return redirect()->route('users')->with('message', 'user created!'); 
     }
   
     /**
@@ -42,7 +78,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required'
         ]);
-        dd($request);
+
         User::where('id', $id)->update([
             'name' => $request->get('name'),
             'email' => $request->get('email')
@@ -54,8 +90,7 @@ class UserController extends Controller
     public function delete($id)
     {
         User::where('id', $id)->delete();
-        return redirect()->route('users');
+        return redirect()->route('users')->with('message', 'user delete!');
     }
     
-
 }

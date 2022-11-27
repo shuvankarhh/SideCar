@@ -6,7 +6,7 @@
         <div class="col-md-12 bg-white">
             <div class="m-2">
                 <a class="btn btn-danger" href="{{ route('reupload') }}">Reupload</a>
-                <a class="btn btn-primary" href="{{ route('createInvoice') }}">Export To ERP ({!!$selectedTenant['Name'] !!})</a> 
+                <a class="btn btn-primary" href="{{ route('createInvoice') }}">Export To ERP ({{ $tenantName }})</a> 
             </div>
     
             <table class="table table-bordered">
