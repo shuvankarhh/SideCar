@@ -38,11 +38,11 @@ class FormatInvoiceData
             $data[$row['vendorid']]['invoices'][$row['invnum']]['invdue'] = $row['invdue'];
 
             // Gl code detail
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glamt'] = (string)$row['glamt'];
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['gldesc'] = $row['gldesc'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$key]['glamt'] = (string)$row['glamt'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$key]['gldesc'] = $row['gldesc'];
 
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['glcode'] = $row['coa'];
-            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$row['glcode']]['tracking'] = [$row['tracking_category'] => $row['tracking_option']];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$key]['glcode'] = $row['coa'];
+            $data[$row['vendorid']]['invoices'][$row['invnum']]['glcodes'][$key]['tracking'] = [$row['tracking_category'] => $row['tracking_option']];
 
         }
         return $data;
