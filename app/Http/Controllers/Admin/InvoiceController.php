@@ -48,7 +48,9 @@ class InvoiceController extends Controller
         if($p->projectApiSystem->tanent_id == null){
             return redirect()->route('confirmTenant');
         }
-        return view('pages.upload');
+        return view('pages.upload',[
+            'tenantName' => $this->getProject()->projectApiSystem->tanent_name ?? ''
+        ]);
     }
 
     // fileupload
