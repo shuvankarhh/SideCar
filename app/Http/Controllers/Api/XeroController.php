@@ -67,7 +67,7 @@ class XeroController extends Controller
         ->post('https://identity.xero.com/connect/revocation',[
             'token' => $xeroCredentials->getRefreshToken()
         ]);
-        // $project->projectApiSystem->apiAccessToken()->delete();
+        $project->projectApiSystem->update(['access_details' => null]);
 
         return response()->json($response ?? []);
     }
@@ -75,5 +75,20 @@ class XeroController extends Controller
     // registor form and password change
     // fileupload form error remove on reupload
     // Cron JOB to refresh token
+
+    public function refreshToken(OauthCredentialManager $xeroCredentials)
+    {
+        $project = $this->getProject();
+
+        $response = Http::withToken(base64_encode($project->projectApiSystem->api_key . ":" . $project->projectApiSystem->api_secret), 'Basic')
+        //->withHeaders(['Content-Type'=> 'application/x-www-form-urlencoded'])
+        ->asForm()
+        ->post(config('xero.oauth.url_access_token'),[
+            'grant_type'=>'refresh_token',
+            'refresh_token' => $xeroCredentials->getRefreshToken()
+        ]);
+
+        return response()->json($response ?? []);
+    }
 
 }

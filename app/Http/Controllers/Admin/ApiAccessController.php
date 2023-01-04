@@ -17,6 +17,7 @@ class ApiAccessController extends Controller
 {
 
     // call back URL https://sidecar.local/xero/auth/callback
+    // comes back with code and state
     public function index(Request $request, OauthCredentialManager $oauth, IdentityApi $identity, OauthTwoProvider $provider)
     {
         try {
@@ -28,6 +29,7 @@ class ApiAccessController extends Controller
             $provider->setClientID($this->getProject()->projectApiSystem->api_key);
             $provider->setClientSecret($this->getProject()->projectApiSystem->api_secret);
 
+            // make request to get access token
             $accessToken = $provider->getAccessToken('authorization_code', $request->only('code'));
 
             $identity->getConfig()->setAccessToken((string)$accessToken->getToken());

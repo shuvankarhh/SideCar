@@ -31,6 +31,8 @@ Route::middleware(['auth','RestrictedUrl'])->group(function(){
     Route::get('/manage/xero', [\App\Http\Controllers\Api\XeroController::class, 'index'])->name('xero.auth.success');
     Route::get('/call/back', [ApiAccessController::class, 'index'])->name("callBackRedirect");
     Route::get('/revoke', [\App\Http\Controllers\Api\XeroController::class, 'revokeAccessToken'])->name('xero.auth.revoke');
+    Route::get('/refresh_token', [\App\Http\Controllers\Api\XeroController::class, 'refreshToken'])->name('xero.auth.refreshToken');
+
 
     Route::get('/fileupload', [InvoiceController::class, 'index'])->name("upload");
     Route::post('/fileupload', [InvoiceController::class, 'saveFile'])->name("saveFile");
