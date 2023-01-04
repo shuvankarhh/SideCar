@@ -151,7 +151,7 @@ class InvoiceController extends Controller
 
     private function makeRequest($xeroCredentials, $inovices)
     {
-        if ($xeroCredentials->exists()) {
+        if ($xeroCredentials->exists() && !$xeroCredentials->isExpired()) {
             // Tenant ID is based on Project Orgination ID... we can allow for all the Orgination ... need to be
             $tenantID = $this->getProject()->projectApiSystem->tanent_id;
             $xero = resolve(\XeroAPI\XeroPHP\Api\AccountingApi::class);

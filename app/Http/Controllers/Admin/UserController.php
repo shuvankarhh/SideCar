@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -29,7 +30,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        $roles = Role::orderBy('name', 'DESC')->get()->pluck('name', 'id')->toArray();
+        return view('users.create', compact('roles'));
     }
 
     /**
@@ -46,11 +48,12 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:6'],
         ]);
         
-        User::create([
+        $user = User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
+            'password' => bcrypt($request->get('password')),
         ]);
+        $user->assignRole([$request->get('role')]);
 
         return redirect()->route('users')->with('message', 'user created!'); 
     }
@@ -79,10 +82,12 @@ class UserController extends Controller
             'email' => 'required'
         ]);
 
-        User::where('id', $id)->update([
+        $dataToUpdate = [
             'name' => $request->get('name'),
-            'email' => $request->get('email')
-        ]);
+            'email' => $request->get('email'),
+            'password' => !empty($request->get('password')) ? bcrypt($request->get('password')) : ''
+        ];
+        User::where('id', $id)->update(array_filter($dataToUpdate));
 
         return redirect()->route('users');
     }
