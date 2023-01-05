@@ -11,7 +11,6 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use App\Models\InvoiceImport;
 use App\Models\ChartOfAccount;
-use App\Models\TrackingCategory;
 use App\Models\TrackingOption;
 
 class InvoiceFileImport implements ToCollection, WithHeadingRow
@@ -19,12 +18,14 @@ class InvoiceFileImport implements ToCollection, WithHeadingRow
 
     public $data;
     protected $fileName;
+    protected $fileExtension;
     protected $project;
 
-    public function fromFile(string $fileName, $project)
+    public function fromFile(string $fileName, $project, $fileExtension)
     {
         $this->fileName = $fileName;
         $this->project = $project;
+        $this->fileExtension = $fileExtension;
         return $this;
     }
 
@@ -74,7 +75,13 @@ class InvoiceFileImport implements ToCollection, WithHeadingRow
     public function transformDate($value, $format = 'Y-m-d')
     {
         try {
-            $date = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
+            if( in_array($this->fileExtension,['txt','csv'])){
+                $date = \Carbon\Carbon::createFromFormat('m/d/Y', $value)->format($format);
+            }
+            else{
+                $date = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
+            }
+            
         } catch (\ErrorException $e) {
             echo $value;
             return \Carbon\Carbon::createFromFormat($format, $value);

@@ -56,10 +56,13 @@ class InvoiceController extends Controller
     // fileupload
     public function saveFile(Request $request)
     {
+        //var_dump($request->file('filename')->extension());
+        //dd($request->file('filename'));
         // unique file validation needed
         $request->validate([
-                'filename' => ["required",
-                    "mimes:xlx,xls,xlsx",
+                'filename' => [
+                    "required",
+                    "mimes:xlx,xls,xlsx,text/csv,text/plain,application/csv,csv,txt",
                     new UniqueFileNameValidation()
                 ]
             ]
@@ -71,9 +74,15 @@ class InvoiceController extends Controller
         // same file name should give error
         if($request->file('filename'))
         {
-            $path = $request->file('filename')->store('excel-files');
+            $uploadedFile = $request->file('filename');
+            if($request->file('filename')->extension() == 'txt'){
+                $path = $uploadedFile->storeAs('excel-files', \Str::random(40) . '.csv');
+            }
+            else{
+                $path = $uploadedFile->store('excel-files');
+            }
 
-            $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->filename->getClientOriginalName(), $this->getProject());
+            $invoiceFileImporter = (new InvoiceFileImport())->fromFile($request->filename->getClientOriginalName(), $this->getProject(), $request->file('filename')->extension());
             Excel::import($invoiceFileImporter, storage_path('app/' . $path));
             // delete the file after import
             unlink(storage_path('app/' . $path));
