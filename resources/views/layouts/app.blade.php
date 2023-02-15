@@ -18,6 +18,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <link href="{{ env('cssOverWrite', '') }}" rel="stylesheet">
+
 </head>
 <body >
 
@@ -25,7 +28,6 @@
         <div class="loading" x-show="loading" x-on:loading.window="loading = !loading" >Loading...</div>
     </div>
     
-
     <header>
 
         <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3 navbar-light text-white bg-dark shadow-sm" id="mainNav">

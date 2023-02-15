@@ -1,0 +1,11 @@
+:root{
+    --bs-body-bg:red;
+}
+
+.btn-primary{
+    --bs-btn-border-width:1px;
+    --bs-btn-border-color:red;
+    --bs-btn-border-radius:6px;
+    --bs-btn-bg:blue;
+}
+
