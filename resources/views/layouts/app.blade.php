@@ -41,11 +41,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     @auth
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('reset') }}">| Reset |</a>
-                        </li>
-                    </ul>
+                    <x-menuRight></x-menuRight>
                     @endauth
 
                     <!-- Right Side Of Navbar -->
@@ -62,6 +58,8 @@
 
                         @else
                            
+                            <x-menuLeft></x-menuLeft>
+                            
                             <x-setupDetails></x-setupDetails>
                             
                             <li class="nav-item dropdown">

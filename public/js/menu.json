@@ -1,0 +1,8 @@
+{
+    "right":[
+        {"name": "Reset", "link": "/reset", "sub": null}
+    ],
+    "left":[
+        {"name": "test_one", "link": "/home", "sub": null}
+    ]
+}

@@ -1,10 +1,10 @@
 :root{
-    --bs-body-bg:red;
+    --bs-body-bg: rgb(88, 144, 167);
 }
 
 .btn-primary{
     --bs-btn-border-width:1px;
-    --bs-btn-border-color:red;
+    --bs-btn-border-color:rgb(179, 147, 147);
     --bs-btn-border-radius:6px;
     --bs-btn-bg:blue;
 }
