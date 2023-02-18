@@ -41,7 +41,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     @auth
-                    <x-menuRight></x-menuRight>
+                    <x-menuLeft></x-menuLeft>
                     @endauth
 
                     <!-- Right Side Of Navbar -->
@@ -58,8 +58,9 @@
 
                         @else
                            
-                            <x-menuLeft></x-menuLeft>
                             
+                            <x-menuRight></x-menuRight>
+
                             <x-setupDetails></x-setupDetails>
                             
                             <li class="nav-item dropdown">
