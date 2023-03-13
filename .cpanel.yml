@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/aq3lrhscsvdi/public_html/fullforcefinancial.com/sidecar
+    - /bin/cp -r ./* $DEPLOYPATH/
