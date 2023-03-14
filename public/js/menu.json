@@ -1,6 +1,8 @@
 {
     "left":[
-        {"name": "Reset", "link": "/reset", "sub": null}
+        {"name": "Reset", "link": "/reset", "sub": null},
+        {"name": "Fringe", "link": "https://fringe.fullforcefinancial.com/", "sub": null},
+        {"name": "Get PO", "link": "https://po.fullforcefinancial.com/", "sub": null}
     ],
     "right":[
     ]
