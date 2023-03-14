@@ -4,7 +4,6 @@
 
 .btn-primary{
     --bs-btn-border-width:1px;
-    --bs-btn-border-color:rgb(179, 147, 147);
-    --bs-btn-border-radius:6px;
-    --bs-btn-bg:blue;
+    --bs-btn-border-color:rgb(200, 30, 28);
+    --bs-btn-bg:rgb(200, 30, 28);
 }
