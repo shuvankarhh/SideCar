@@ -75,8 +75,13 @@ class SetupController extends Controller
             $q->where('Company_Name','=', '20th Century Props');
         })->first();
         
-        $projects = Project::where('Client_ID', $clientID)->pluck('Project_Name', 'Project_ID')->prepend('Please select', '')->all();
-  
+        $projects = Project::whereHas('userProject', function ($query) use ($clientID) {
+            $query->where('User_ID', auth()->id())->where('Client_ID', $clientID);
+        })
+        ->pluck('Project_Name', 'Project_ID')
+        ->prepend('Please select', '')
+        ->all();
+
         return view('setup.step_two', compact('projects'));
     }
   

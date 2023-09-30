@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Client;
+use App\Models\UserProject;
 use App\Models\ProjectApiSystem;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
@@ -15,6 +16,11 @@ class Project extends Model
 
     public function client(){
         return $this->hasOne(Client::class, 'Client_ID', 'Client_ID');
+    }
+
+    public function userProject()
+    {
+        return $this->hasMany(UserProject::class, 'Project_ID');
     }
 
     public function projectApiSystem(){
